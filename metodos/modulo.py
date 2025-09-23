@@ -97,3 +97,4 @@ class Logica_reproductor:
 
         self.ui.sld_avance.setRange(0, 0)
 
+        # prueba de commitsgvCE,
