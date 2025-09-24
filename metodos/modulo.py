@@ -33,7 +33,14 @@ class Logica_reproductor:
 
         # Conectar la acción a tu metodo
         self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
+        # conectamos el boton de play para buscar archivos tambien
         self.ui.btn_play.clicked.connect(self.abrir_archivo)
+
+        # conectar slider de volumen
+        self.ui.vol_bar.valueChanged.connect(self.mod_volumen)
+
+    def mod_volumen(self, valor):
+        self.salida_audio.setVolume(valor/100)
 
 
     def reproducir_item(self, item):

@@ -37,14 +37,6 @@ class Interfaz_reproductor(object):
 
         # Agregar acción al menú
         self.menu_archivo.addAction(self.accion_abrir)
-
-
-
-
-
-
-
-
 # ================================================================================
 
 ######## widget superior (reproductor y lista de reproduccion)
@@ -72,7 +64,7 @@ class Interfaz_reproductor(object):
 #================================================================================
 
 
-####### widget inferior (reproductor y lista de reproduccion)
+####### widget inferior (controles y sliders)
         self.wdg_inferior = QWidget()
         self.wdg_inferior.setMinimumHeight(300)
         self.wdg_inferior.setMaximumHeight(300)
