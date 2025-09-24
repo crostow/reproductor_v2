@@ -1,4 +1,4 @@
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QIcon, Qt
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
@@ -17,7 +17,6 @@ class Logica_reproductor:
         # creamos el reproductor
         self.creacion_reproductor()
 
-
         # abrimos el archivo estatico
         # self.Abri_archivo()
 
@@ -30,14 +29,32 @@ class Logica_reproductor:
         self.ui.sld_avance.sliderMoved.connect(self.cambiar_posicion)
         # señal para hacer doble click en la lr y reproducir archivo
         self.ui.wdg_lista.itemDoubleClicked.connect(self.reproducir_item)
-
         # Conectar la acción a tu metodo
         self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
         # conectamos el boton de play para buscar archivos tambien
         self.ui.btn_play.clicked.connect(self.abrir_archivo)
-
         # conectar slider de volumen
         self.ui.vol_bar.valueChanged.connect(self.mod_volumen)
+        # conectar btn_lp a metodo para ocultar la lp
+        self.ui.btn_lp.clicked.connect(self.lp_cambio)
+
+    def lp_cambio(self):
+        print(".zfkdjgva<sfjnagia<")
+        ancho_actual = self.ui.wdg_lista.width()
+
+        # creamos animacion sobre maximunwidth
+        self.animacion = QPropertyAnimation(self.ui.wdg_lista, b"maximumWidth")
+        self.animacion.setDuration(300)
+        self.animacion.setEasingCurve(QEasingCurve.InOutQuad)
+
+        if ancho_actual > 0:
+            self.animacion.setStartValue(ancho_actual)
+            self.animacion.setEndValue(0)
+        else:
+            self.animacion.setStartValue(0)
+            self.animacion.setEndValue(300)
+
+        self.animacion.start()
 
     def mod_volumen(self, valor):
         self.salida_audio.setVolume(valor/100)
