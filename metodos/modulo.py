@@ -1,6 +1,9 @@
 from PySide6.QtCore import QUrl
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, Qt
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+import os
+
+from PySide6.QtWidgets import QListWidgetItem, QFileDialog
 
 
 class Logica_reproductor:
@@ -16,15 +19,63 @@ class Logica_reproductor:
 
 
         # abrimos el archivo estatico
-        self.Abri_archivo()
+        # self.Abri_archivo()
 
 
-        # señal cuando cambia  el reproductor de duracion
+        # señal cuando cambia el reproductor de duracion
         self.reproductor.durationChanged.connect(self.mostrar_info_video)
         # señal para actualizar la posicion del slider
         self.reproductor.positionChanged.connect(self.actualizar_posicion)
-        # señal para mover le video cuando el usuario arrastra el slider
+        # señal para mover el video cuando el usuario arrastra el slider
         self.ui.sld_avance.sliderMoved.connect(self.cambiar_posicion)
+        # señal para hacer doble click en la lr y reproducir archivo
+        self.ui.wdg_lista.itemDoubleClicked.connect(self.reproducir_item)
+
+        # Conectar la acción a tu metodo
+        self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
+
+
+    def reproducir_item(self, item):
+        self.reproductor.stop()
+        archivo = item.data(Qt.UserRole)
+        if archivo:
+            directorio_archivo = QUrl.fromLocalFile(archivo)
+            self.reproductor.setSource(directorio_archivo)
+            self.reproductor.play()
+
+
+
+    def abrir_archivo(self):
+        directorio_archivo, _ = QFileDialog.getOpenFileName(
+            None, "Selecciona el video",
+            os.path.expanduser("~"),
+            "Videos (*.mp4 *.avi *.mkv *.mov)"
+        )
+
+        # print("dialog",directorio_archivo)
+        if directorio_archivo:
+            # creamos QUrl para el reproductor
+            nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
+
+            # conectamos el reproductor widget creado en la interfaz
+            self.reproductor.setVideoOutput(self.ui.wdg_video)
+            # asignamos el archivo
+            self.reproductor.setSource(directorio_archivo)
+            # reproducimos el archivo asignado
+            self.reproductor.play()
+
+            self.guardar_info_video(directorio_archivo)
+
+    def guardar_info_video(self, directorio_archivo):
+        nombre_archivo = os.path.basename(directorio_archivo)
+        print(nombre_archivo)
+        print(directorio_archivo)
+
+        item = QListWidgetItem(nombre_archivo)
+        item.setData(Qt.UserRole, directorio_archivo)
+
+        self.ui.wdg_lista.addItem(item)
+
 
     def cambiar_posicion(self, posicion):
         self.reproductor.setPosition(posicion)
@@ -55,7 +106,6 @@ class Logica_reproductor:
         # Formateamos como mm:ss y lo mostramos en el QLabel
         self.ui.lbl_tiempo_total.setText(f"{horas:02d}:{minutos:02d}:{segundos:02d}")
 
-
     def creacion_reproductor(self):
         # creamos el reproductor
         self.reproductor = QMediaPlayer()
@@ -64,37 +114,18 @@ class Logica_reproductor:
         # asignamos audio del video a la salida de audio
         self.reproductor.setAudioOutput(self.salida_audio)
 
-
-
-    def Abri_archivo(self):
-        # damos direccion de archivo local estatico
-        archivo=("video_test/sample-30s.mp4")
-        # creamos la ubicacion del directorio
-        directorio_archivo = QUrl.fromLocalFile(archivo)
-
-        print(directorio_archivo)
-        # conectamos el reproductor widget creado en la interfaz
-        self.reproductor.setVideoOutput(self.ui.wdg_video)
-        # asignamos el archivo
-        self.reproductor.setSource(directorio_archivo)
-        # reproducimos el archivo asignado
-        self.reproductor.play()
-
-
-        self.ui.wdg_lista.addItem(archivo)
-
-
     def limpiar_interfaz(self):
         # limpiamos la lista de reproduccion
         self.ui.wdg_lista.clear()
         # asignamos la barra de volumen al 50%
         self.ui.vol_bar.setValue(50)
 
+        # desactivamos los botones al inicia
         self.ui.btn_play.setEnabled(False)
         self.ui.btn_anterior.setEnabled(False)
         self.ui.btn_stop.setEnabled(False)
         self.ui.btn_siguiente.setEnabled(False)
 
+        # slider de reproduccion lo definimos en 0
         self.ui.sld_avance.setRange(0, 0)
 
-        # prueba de commitsgvCE,

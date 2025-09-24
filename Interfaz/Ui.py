@@ -1,14 +1,14 @@
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap, QAction
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLabel, QSlider, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLabel, QSlider, QPushButton, QSizePolicy, \
+    QMenuBar
 
 import iconos_rc
 
 class Interfaz_reproductor(object):
     def setupUi(self,MainWindow):
-
 
         # se le asigna un nombre al mainwindow
         MainWindow.setObjectName("MainWindow")
@@ -23,7 +23,29 @@ class Interfaz_reproductor(object):
         # layout principla
         self.layout_horizontal = QVBoxLayout(self.centralwidget)
 
+######## menu  y barar inferior
+        # creamos la barra de menu
+        self.menu_bar = QMenuBar(MainWindow)
+        # la enviamos al main window
+        MainWindow.setMenuBar(self.menu_bar)
 
+        # creamos el menu archivo
+        self.menu_archivo = self.menu_bar.addMenu("Archivo")  # ✅ guardamos en otra variable
+
+        # Crear acción "Abrir"
+        self.accion_abrir = QAction("Abrir", MainWindow)
+
+        # Agregar acción al menú
+        self.menu_archivo.addAction(self.accion_abrir)
+
+
+
+
+
+
+
+
+# ================================================================================
 
 ######## widget superior (reproductor y lista de reproduccion)
         self.wdg_superior = QWidget()
@@ -47,7 +69,7 @@ class Interfaz_reproductor(object):
         # agregamos los widgets creados al layout del widget superior
         self.layout_wdg_superior.addWidget(self.wdg_lista)
         self.layout_wdg_superior.addWidget(self.wdg_video)
-#=============================================== =================================
+#================================================================================
 
 
 ####### widget inferior (reproductor y lista de reproduccion)
