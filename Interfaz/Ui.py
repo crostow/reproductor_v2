@@ -4,9 +4,7 @@ from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLabel, QSlider, QPushButton, QSizePolicy, \
     QMenuBar
-
 import iconos_rc
-
 class Interfaz_reproductor(object):
     def setupUi(self,MainWindow):
 
@@ -86,6 +84,7 @@ class Interfaz_reproductor(object):
         self.lbl_tiempo.setText("00:00:00")
 
         self.sld_avance = QSlider(Qt.Horizontal)
+
 
         self.lbl_tiempo_total = QLabel()
         self.lbl_tiempo_total.setText("00:00:00")

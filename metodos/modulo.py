@@ -14,6 +14,11 @@ class Logica_reproductor:
         # verificamos que todo se inicie correctamente
         self.limpiar_interfaz()
 
+        # lista de rutas completas
+
+        self.lista_reproduccion = []
+        self.indice_actual = -1
+
         # creamos el reproductor
         self.creacion_reproductor()
 
@@ -32,11 +37,19 @@ class Logica_reproductor:
         # Conectar la acción a tu metodo
         self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
         # conectamos el boton de play para buscar archivos tambien
-        self.ui.btn_play.clicked.connect(self.abrir_archivo)
+        # self.ui.btn_play.clicked.connect(self.abrir_archivo)
         # conectar slider de volumen
         self.ui.vol_bar.valueChanged.connect(self.mod_volumen)
         # conectar btn_lp a metodo para ocultar la lp
         self.ui.btn_lp.clicked.connect(self.lp_cambio)
+        # detectar si el reproductor termina
+        self.reproductor.mediaStatusChanged.connect(self.revisar_final)
+
+    def revisar_final(self, status):
+        if status == QMediaPlayer.EndOfMedia:
+            self.indice_actual+= 1
+            if self.indice_actual < len(self.lista_reproduccion):
+                self.reproducir_video()
 
     def lp_cambio(self):
         print(".zfkdjgva<sfjnagia<")
@@ -53,20 +66,17 @@ class Logica_reproductor:
         else:
             self.animacion.setStartValue(0)
             self.animacion.setEndValue(300)
-
         self.animacion.start()
 
     def mod_volumen(self, valor):
         self.salida_audio.setVolume(valor/100)
 
-
     def reproducir_item(self, item):
         self.reproductor.stop()
-        archivo = item.data(Qt.UserRole)
-        if archivo:
-            directorio_archivo = QUrl.fromLocalFile(archivo)
-            self.reproductor.setSource(directorio_archivo)
-            self.reproductor.play()
+        ruta = item.data(Qt.UserRole)
+        if ruta:
+            self.indice_actual = self.lista_reproduccion.index(ruta)
+            self.reproducir_video()
 
     def abrir_archivo(self):
         directorio_archivo, _ = QFileDialog.getOpenFileName(
@@ -76,28 +86,42 @@ class Logica_reproductor:
         )
 
         # print("dialog",directorio_archivo)
-        if directorio_archivo:
+        if directorio_archivo :
+            self.lista_reproduccion.append(directorio_archivo)
             # creamos QUrl para el reproductor
-            nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
+            # nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
 
+            # obtenemos el nombre del archivo
+            nombre_archivo = os.path.basename(directorio_archivo)
+            # agregamos el nombre del archivo a la lista de reproduccion
+            item = QListWidgetItem(nombre_archivo)
+
+            item.setData(Qt.UserRole, directorio_archivo)
+
+            self.ui.wdg_lista.addItem(item)
+
+            if self.reproductor.mediaStatus() != QMediaPlayer.LoadedMedia and self.indice_actual == -1:
+                self.indice_actual = len(self.lista_reproduccion) - 1
+                self.reproducir_video()
+
+
+                # # conectamos el reproductor widget creado en la interfaz
+                # self.reproductor.setVideoOutput(self.ui.wdg_video)
+                # # asignamos el archivo
+                # self.reproductor.setSource(directorio_archivo)
+                # # reproducimos el archivo asignado
+                # self.reproductor.play()
+                # self.guardar_info_video(directorio_archivo)
+
+    def reproducir_video(self):
+        if 0 <= self.indice_actual < len(self.lista_reproduccion):
+            ruta = self.lista_reproduccion[self.indice_actual]
             # conectamos el reproductor widget creado en la interfaz
             self.reproductor.setVideoOutput(self.ui.wdg_video)
-            # asignamos el archivo
-            self.reproductor.setSource(directorio_archivo)
-            # reproducimos el archivo asignado
+            # asignamos el reproductor
+            self.reproductor.setSource(QUrl.fromLocalFile(ruta))
             self.reproductor.play()
 
-            self.guardar_info_video(directorio_archivo)
-
-    def guardar_info_video(self, directorio_archivo):
-        nombre_archivo = os.path.basename(directorio_archivo)
-        print(nombre_archivo)
-        print(directorio_archivo)
-
-        item = QListWidgetItem(nombre_archivo)
-        item.setData(Qt.UserRole, directorio_archivo)
-
-        self.ui.wdg_lista.addItem(item)
 
     def cambiar_posicion(self, posicion):
         self.reproductor.setPosition(posicion)
@@ -143,7 +167,7 @@ class Logica_reproductor:
         self.ui.vol_bar.setValue(50)
 
         # desactivamos los botones al inicia
-        # self.ui.btn_play.setEnabled(False)
+        self.ui.btn_play.setEnabled(False)
         self.ui.btn_anterior.setEnabled(False)
         self.ui.btn_stop.setEnabled(False)
         self.ui.btn_siguiente.setEnabled(False)
