@@ -33,6 +33,7 @@ class Logica_reproductor:
 
         # Conectar la acción a tu metodo
         self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
+        self.ui.btn_play.clicked.connect(self.abrir_archivo)
 
 
     def reproducir_item(self, item):
@@ -42,8 +43,6 @@ class Logica_reproductor:
             directorio_archivo = QUrl.fromLocalFile(archivo)
             self.reproductor.setSource(directorio_archivo)
             self.reproductor.play()
-
-
 
     def abrir_archivo(self):
         directorio_archivo, _ = QFileDialog.getOpenFileName(
@@ -75,7 +74,6 @@ class Logica_reproductor:
         item.setData(Qt.UserRole, directorio_archivo)
 
         self.ui.wdg_lista.addItem(item)
-
 
     def cambiar_posicion(self, posicion):
         self.reproductor.setPosition(posicion)
@@ -121,7 +119,7 @@ class Logica_reproductor:
         self.ui.vol_bar.setValue(50)
 
         # desactivamos los botones al inicia
-        self.ui.btn_play.setEnabled(False)
+        # self.ui.btn_play.setEnabled(False)
         self.ui.btn_anterior.setEnabled(False)
         self.ui.btn_stop.setEnabled(False)
         self.ui.btn_siguiente.setEnabled(False)
