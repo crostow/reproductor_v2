@@ -29,6 +29,8 @@ class Logica_reproductor:
         # self.Abri_archivo()
         # self.ui.wdg_lista.callback_agregar = self.abrir_archivo
 
+
+        self.ui.wdg_lista.archivos_dropeados.connect(self.agregar_archivos)
         # señal cuando cambia el reproductor de duracion
         self.reproductor.durationChanged.connect(self.mostrar_info_video)
         # señal para actualizar la posicion del slider
@@ -81,6 +83,9 @@ class Logica_reproductor:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
 
+
+
+
     def abrir_archivo(self, archivo=None):
         archivos, _ = QFileDialog.getOpenFileNames(
             None, "Selecciona el video",
@@ -88,9 +93,12 @@ class Logica_reproductor:
             "Videos (*.mp4 *.avi *.mkv *.mov)"
         )
 
-        if not archivos:
-            return
+        if archivos:
+            self.agregar_archivos(archivos)
+        # if not archivos:
+        #     return
 
+    def agregar_archivos(self, archivos):
         formatos_permitidos = (".mp4", ".avi", ".mkv", ".mov")
 
         # print("dialog",directorio_archivo)
@@ -128,6 +136,8 @@ class Logica_reproductor:
                     # # reproducimos el archivo asignado
                     # self.reproductor.play()
                     # self.guardar_info_video(directorio_archivo)
+
+
 
     def reproducir_video(self):
         if 0 <= self.indice_actual < len(self.lista_reproduccion):

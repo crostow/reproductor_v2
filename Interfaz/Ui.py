@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QIcon, QPixmap, QAction
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
@@ -48,7 +48,8 @@ class Interfaz_reproductor(object):
         self.layout_wdg_superior = QHBoxLayout(self.wdg_superior)
 
         # crearemos 2 widget mas uno para la lista de reproduccion y otro para el video 
-        self.wdg_lista = QListWidget()
+        self.wdg_lista = ListaVideos()
+        # self.wdg_lista = QListWidget()
         self.wdg_lista.setMinimumHeight(300)
         self.wdg_lista.setMaximumWidth(300)
         # le damos css temporal para ver que se vayan creando bien
@@ -178,3 +179,35 @@ class Interfaz_reproductor(object):
         # mandamos el widget central
         MainWindow.setCentralWidget(self.centralwidget)
 
+
+
+class ListaVideos(QListWidget):
+    archivos_dropeados = Signal(list)  # señal que emitirá lista de rutas
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAcceptDrops(True)
+    def dragEnterEvent(self, event):
+        print("entra a drag")
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+    def dragMoveEvent(self, event):
+        print("dragMoveEvent ejecutado")  # Print adicional para depurar
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+    def dropEvent(self, event):
+        print("entra a drop")
+        if event.mimeData().hasUrls():
+            archivos = []
+            for url in event.mimeData().urls():
+                archivo = url.toLocalFile()
+                if archivo:
+                    archivos.append(archivo)
+            if archivos:
+                self.archivos_dropeados.emit(archivos)  # emitimos la señal con la lista
+            event.acceptProposedAction()
+        else:
+            event.ignore()
