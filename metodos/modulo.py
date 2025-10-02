@@ -3,13 +3,16 @@ from PySide6.QtGui import QIcon, Qt
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
 
-from PySide6.QtWidgets import QListWidgetItem, QFileDialog
+from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QListWidget
 
 
 class Logica_reproductor:
     def __init__(self, ui):
         # cargamos la interfaz en la variable self.ui
         self.ui = ui
+
+        self.ui.wdg_lista.setAcceptDrops(True)
+        # self.lista_videos.setAcceptDrops(True)
 
         # verificamos que todo se inicie correctamente
         self.limpiar_interfaz()
@@ -24,7 +27,7 @@ class Logica_reproductor:
 
         # abrimos el archivo estatico
         # self.Abri_archivo()
-
+        # self.ui.wdg_lista.callback_agregar = self.abrir_archivo
 
         # señal cuando cambia el reproductor de duracion
         self.reproductor.durationChanged.connect(self.mostrar_info_video)
@@ -78,40 +81,53 @@ class Logica_reproductor:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
 
-    def abrir_archivo(self):
-        directorio_archivo, _ = QFileDialog.getOpenFileName(
+    def abrir_archivo(self, archivo=None):
+        archivos, _ = QFileDialog.getOpenFileNames(
             None, "Selecciona el video",
             os.path.expanduser("~"),
             "Videos (*.mp4 *.avi *.mkv *.mov)"
         )
 
+        if not archivos:
+            return
+
+        formatos_permitidos = (".mp4", ".avi", ".mkv", ".mov")
+
         # print("dialog",directorio_archivo)
-        if directorio_archivo :
-            self.lista_reproduccion.append(directorio_archivo)
-            # creamos QUrl para el reproductor
-            # nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
+        for  directorio_archivo in archivos:
+            # Convertimos a minúsculas y verificamos la extensión
+            if not directorio_archivo.lower().endswith(formatos_permitidos):
+                continue  # salta archivos no permitidos
 
-            # obtenemos el nombre del archivo
-            nombre_archivo = os.path.basename(directorio_archivo)
-            # agregamos el nombre del archivo a la lista de reproduccion
-            item = QListWidgetItem(nombre_archivo)
+            if directorio_archivo in self.lista_reproduccion:
+                continue  # evita duplicados
 
-            item.setData(Qt.UserRole, directorio_archivo)
+            if directorio_archivo in archivos:
+                self.lista_reproduccion.append(directorio_archivo)
+                # creamos QUrl para el reproductor
+                # nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
 
-            self.ui.wdg_lista.addItem(item)
+                # obtenemos el nombre del archivo
+                nombre_archivo = os.path.basename(directorio_archivo)
+                # agregamos el nombre del archivo a la lista de reproduccion
+                item = QListWidgetItem(nombre_archivo)
 
-            if self.reproductor.mediaStatus() != QMediaPlayer.LoadedMedia and self.indice_actual == -1:
-                self.indice_actual = len(self.lista_reproduccion) - 1
-                self.reproducir_video()
+                item.setData(Qt.UserRole, directorio_archivo)
+
+                self.ui.wdg_lista.addItem(item)
+
+                if self.reproductor.mediaStatus() != QMediaPlayer.LoadedMedia and self.indice_actual == -1:
+                    self.indice_actual = len(self.lista_reproduccion) - 1
+                    self.reproducir_video()
 
 
-                # # conectamos el reproductor widget creado en la interfaz
-                # self.reproductor.setVideoOutput(self.ui.wdg_video)
-                # # asignamos el archivo
-                # self.reproductor.setSource(directorio_archivo)
-                # # reproducimos el archivo asignado
-                # self.reproductor.play()
-                # self.guardar_info_video(directorio_archivo)
+                    # # conectamos el reproductor widget creado en la interfaz
+                    # self.reproductor.setVideoOutput(self.ui.wdg_video)
+                    # # asignamos el archivo
+                    # self.reproductor.setSource(directorio_archivo)
+                    # # reproducimos el archivo asignado
+                    # self.reproductor.play()
+                    # self.guardar_info_video(directorio_archivo)
 
     def reproducir_video(self):
         if 0 <= self.indice_actual < len(self.lista_reproduccion):
@@ -174,4 +190,3 @@ class Logica_reproductor:
 
         # slider de reproduccion lo definimos en 0
         self.ui.sld_avance.setRange(0, 0)
-

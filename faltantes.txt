@@ -1,0 +1,19 @@
+####menu
+---crear un menu para abrir archivo
+
+####controles de volumen
+conectar el scroll para el volumen
+
+#### lista de reproduccion
+---al abrir un video mandarlo a la lista de reproduccion, si se abre otro video agregarlo a la lista en forma decendiente he ir reproduciendo conforme a la lista
+---si se hace doble click en un elementode la lista se reproduce ese video
+si abres una carpeta agregar todos los video a la lista
+---agregar funcion a la lista de reproduccion para ocultar y mostrar
+
+#### metadatos
+---obtener datos del video tiempo total enviarlo al label mm:ss
+---tiempo transcurrido y mostrado en el label
+
+
+####funciones de video
+---adelantar y retrazar  el video con scroll

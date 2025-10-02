@@ -21,6 +21,8 @@ class Interfaz_reproductor(object):
         # layout principla
         self.layout_horizontal = QVBoxLayout(self.centralwidget)
 
+
+
 ######## menu  y barar inferior
         # creamos la barra de menu
         self.menu_bar = QMenuBar(MainWindow)
@@ -51,6 +53,7 @@ class Interfaz_reproductor(object):
         self.wdg_lista.setMaximumWidth(300)
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_lista.setStyleSheet("background-color: rgb(130, 130, 130);")
+
 
         # creamos el widget de video
         self.wdg_video = QVideoWidget()
@@ -174,4 +177,4 @@ class Interfaz_reproductor(object):
         
         # mandamos el widget central
         MainWindow.setCentralWidget(self.centralwidget)
-        
+
