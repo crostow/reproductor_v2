@@ -11,25 +11,20 @@ class Logica_reproductor:
         # cargamos la interfaz en la variable self.ui
         self.ui = ui
 
+        # designamos la lista para que acepte arrastar y pegar
         self.ui.wdg_lista.setAcceptDrops(True)
-        # self.lista_videos.setAcceptDrops(True)
 
         # verificamos que todo se inicie correctamente
         self.limpiar_interfaz()
 
         # lista de rutas completas
-
         self.lista_reproduccion = []
         self.indice_actual = -1
 
         # creamos el reproductor
         self.creacion_reproductor()
 
-        # abrimos el archivo estatico
-        # self.Abri_archivo()
-        # self.ui.wdg_lista.callback_agregar = self.abrir_archivo
-
-
+        # ejecutamos una señal para cuando se arrasten los archivos se ejecute un metodo
         self.ui.wdg_lista.archivos_dropeados.connect(self.agregar_archivos)
         # señal cuando cambia el reproductor de duracion
         self.reproductor.durationChanged.connect(self.mostrar_info_video)
@@ -41,30 +36,80 @@ class Logica_reproductor:
         self.ui.wdg_lista.itemDoubleClicked.connect(self.reproducir_item)
         # Conectar la acción a tu metodo
         self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
-        # conectamos el boton de play para buscar archivos tambien
-        # self.ui.btn_play.clicked.connect(self.abrir_archivo)
         # conectar slider de volumen
         self.ui.vol_bar.valueChanged.connect(self.mod_volumen)
         # conectar btn_lp a metodo para ocultar la lp
         self.ui.btn_lp.clicked.connect(self.lp_cambio)
         # detectar si el reproductor termina
         self.reproductor.mediaStatusChanged.connect(self.revisar_final)
+        # señal para pausar video
+        self.ui.btn_play.clicked.connect(self.play_pausa)
+        # señal para detener el video
+        self.ui.btn_stop.clicked.connect(self.stop)
+        # señal para video siguiente
+        self.ui.btn_siguiente.clicked.connect(self.siguiente_video)
+        # señal para video anterior
+        self.ui.btn_anterior.clicked.connect(self.anterior_video)
+
+    def siguiente_video(self):
+        """Reproduce el siguiente video en la lista si existe"""
+        if self.indice_actual + 1 < len(self.lista_reproduccion):
+            self.indice_actual += 1
+            self.reproducir_video()
+        else:
+            print("Fin de la lista de reproducción")
+
+    def anterior_video(self):
+        """Reproduce el video anterior si existe"""
+        if self.indice_actual > 0:
+            self.indice_actual -= 1
+            self.reproducir_video()
+        else:
+            print("Inicio de la lista de reproducción")
+
+    def actualizar_botones(self):
+        self.ui.btn_anterior.setEnabled(self.indice_actual > 0)
+        self.ui.btn_siguiente.setEnabled(self.indice_actual < len(self.lista_reproduccion) - 1)
+
+    def stop(self):
+        self.reproductor.stop()
+        self.ui.btn_play.setIcon(QIcon(":/boton-de-play.png"))
+        self.ui.btn_play.setEnabled(False)
+        self.ui.btn_stop.setEnabled(False)
+        self.ui.btn_siguiente.setEnabled(False)
+        self.ui.btn_anterior.setEnabled(False)
+
+    def play_pausa(self):
+        # funcion para el cambio de estado del boton pausa
+        estado_repro = self.reproductor.playbackState()
+        print(estado_repro)
+        if estado_repro == QMediaPlayer.PlayingState:
+            self.ui.btn_play.setIcon(QIcon(":/boton-de-play.png"))
+            self.reproductor.pause()
+        elif estado_repro == QMediaPlayer.PausedState:
+            self.ui.btn_play.setIcon(QIcon(":/pausa.png"))
+            # self.ui.btn_play.setIcon(QIcon(":/pause.png"))
+            self.reproductor.play()
 
     def revisar_final(self, status):
+        # revisa cuando el video se termina si debe continuar o no
         if status == QMediaPlayer.EndOfMedia:
             self.indice_actual+= 1
             if self.indice_actual < len(self.lista_reproduccion):
                 self.reproducir_video()
+            self.actualizar_botones()
 
     def lp_cambio(self):
-        print(".zfkdjgva<sfjnagia<")
+        # tomamos el valor del ancho actual de la lp
         ancho_actual = self.ui.wdg_lista.width()
 
         # creamos animacion sobre maximunwidth
         self.animacion = QPropertyAnimation(self.ui.wdg_lista, b"maximumWidth")
+        # duracion de la animacion
         self.animacion.setDuration(300)
         self.animacion.setEasingCurve(QEasingCurve.InOutQuad)
 
+        # definimos si se va a cerrar o a mostrarse
         if ancho_actual > 0:
             self.animacion.setStartValue(ancho_actual)
             self.animacion.setEndValue(0)
@@ -74,17 +119,18 @@ class Logica_reproductor:
         self.animacion.start()
 
     def mod_volumen(self, valor):
+        # cabion de valor de audio dependiendo el valor del slider
         self.salida_audio.setVolume(valor/100)
 
     def reproducir_item(self, item):
+        # metodo que se encarga cuando da doble click en la lp haga elk cambio
         self.reproductor.stop()
+        # detenemos el reproductor
         ruta = item.data(Qt.UserRole)
+        # tomamos la ruta del item
         if ruta:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
-
-
-
 
     def abrir_archivo(self, archivo=None):
         archivos, _ = QFileDialog.getOpenFileNames(
@@ -93,10 +139,9 @@ class Logica_reproductor:
             "Videos (*.mp4 *.avi *.mkv *.mov)"
         )
 
+
         if archivos:
             self.agregar_archivos(archivos)
-        # if not archivos:
-        #     return
 
     def agregar_archivos(self, archivos):
         formatos_permitidos = (".mp4", ".avi", ".mkv", ".mov")
@@ -119,25 +164,13 @@ class Logica_reproductor:
                 nombre_archivo = os.path.basename(directorio_archivo)
                 # agregamos el nombre del archivo a la lista de reproduccion
                 item = QListWidgetItem(nombre_archivo)
-
                 item.setData(Qt.UserRole, directorio_archivo)
-
                 self.ui.wdg_lista.addItem(item)
 
                 if self.reproductor.mediaStatus() != QMediaPlayer.LoadedMedia and self.indice_actual == -1:
                     self.indice_actual = len(self.lista_reproduccion) - 1
                     self.reproducir_video()
-
-
-                    # # conectamos el reproductor widget creado en la interfaz
-                    # self.reproductor.setVideoOutput(self.ui.wdg_video)
-                    # # asignamos el archivo
-                    # self.reproductor.setSource(directorio_archivo)
-                    # # reproducimos el archivo asignado
-                    # self.reproductor.play()
-                    # self.guardar_info_video(directorio_archivo)
-
-
+            self.actualizar_botones()
 
     def reproducir_video(self):
         if 0 <= self.indice_actual < len(self.lista_reproduccion):
@@ -147,7 +180,16 @@ class Logica_reproductor:
             # asignamos el reproductor
             self.reproductor.setSource(QUrl.fromLocalFile(ruta))
             self.reproductor.play()
+            self.activar_btns()
+            self.actualizar_botones()
+            self.ui.wdg_lista.setCurrentRow(self.indice_actual)
 
+    def activar_btns(self):
+        self.ui.btn_play.setEnabled(True)
+        self.ui.btn_play.setIcon(QIcon(":/pausa.png"))
+        self.ui.btn_anterior.setEnabled(True)
+        self.ui.btn_stop.setEnabled(True)
+        self.ui.btn_siguiente.setEnabled(True)
 
     def cambiar_posicion(self, posicion):
         self.reproductor.setPosition(posicion)
