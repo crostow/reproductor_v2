@@ -186,20 +186,20 @@ class ListaVideos(QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAcceptDrops(True)
+
     def dragEnterEvent(self, event):
-        print("entra a drag")
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
             event.ignore()
+
     def dragMoveEvent(self, event):
-        print("dragMoveEvent ejecutado")  # Print adicional para depurar
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
             event.ignore()
+
     def dropEvent(self, event):
-        print("entra a drop")
         if event.mimeData().hasUrls():
             archivos = []
             for url in event.mimeData().urls():
