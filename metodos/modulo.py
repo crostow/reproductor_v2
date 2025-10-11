@@ -1,5 +1,5 @@
 from PySide6.QtCore import QUrl, QPropertyAnimation, QEasingCurve
-from PySide6.QtGui import QIcon, Qt
+from PySide6.QtGui import QIcon, Qt, QPixmap
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
 
@@ -52,7 +52,7 @@ class Logica_reproductor:
         self.ui.btn_anterior.clicked.connect(self.anterior_video)
 
     def siguiente_video(self):
-        """Reproduce el siguiente video en la lista si existe"""
+        #"Reproduce el siguiente video en la lista si existe
         if self.indice_actual + 1 < len(self.lista_reproduccion):
             self.indice_actual += 1
             self.reproducir_video()
@@ -60,7 +60,7 @@ class Logica_reproductor:
             print("Fin de la lista de reproducción")
 
     def anterior_video(self):
-        """Reproduce el video anterior si existe"""
+        #Reproduce el video anterior si existe
         if self.indice_actual > 0:
             self.indice_actual -= 1
             self.reproducir_video()
@@ -68,10 +68,12 @@ class Logica_reproductor:
             print("Inicio de la lista de reproducción")
 
     def actualizar_botones(self):
+        # actualiza los botones cuando detecta cambios posicion en la lista de reproduccion
         self.ui.btn_anterior.setEnabled(self.indice_actual > 0)
         self.ui.btn_siguiente.setEnabled(self.indice_actual < len(self.lista_reproduccion) - 1)
 
     def stop(self):
+        # desactiva los botones cuando se detenie el video
         self.reproductor.stop()
         self.ui.btn_play.setIcon(QIcon(":/boton-de-play.png"))
         self.ui.btn_play.setEnabled(False)
@@ -119,8 +121,40 @@ class Logica_reproductor:
         self.animacion.start()
 
     def mod_volumen(self, valor):
-        # cabion de valor de audio dependiendo el valor del slider
+        # cabio de valor de audio dependiendo el valor del slider
         self.salida_audio.setVolume(valor/100)
+        if valor <= 100 and valor >= 80:
+            print("alto")
+            pix = QPixmap(":/volumen_2.png")
+            max_icon = 90
+            scaled_pix = pix.scaled(
+                max_icon, max_icon,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.ui.lbl_volumen.setPixmap(scaled_pix)
+        elif valor <= 80 and valor >0:
+            print("medio")
+            pix = QPixmap(":/volumen_1.png")
+            max_icon = 90
+            scaled_pix = pix.scaled(
+                max_icon, max_icon,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.ui.lbl_volumen.setPixmap(scaled_pix)
+        elif valor == 0:
+            print("bajo")
+            pix = QPixmap(":/silencio.png")
+            max_icon = 90
+            scaled_pix = pix.scaled(
+                max_icon, max_icon,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.ui.lbl_volumen.setPixmap(scaled_pix)
+
+
 
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
@@ -157,10 +191,7 @@ class Logica_reproductor:
 
             if directorio_archivo in archivos:
                 self.lista_reproduccion.append(directorio_archivo)
-                # creamos QUrl para el reproductor
-                # nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
 
-                # obtenemos el nombre del archivo
                 nombre_archivo = os.path.basename(directorio_archivo)
                 # agregamos el nombre del archivo a la lista de reproduccion
                 item = QListWidgetItem(nombre_archivo)
@@ -227,6 +258,7 @@ class Logica_reproductor:
         self.salida_audio = QAudioOutput()
         # asignamos audio del video a la salida de audio
         self.reproductor.setAudioOutput(self.salida_audio)
+
 
     def limpiar_interfaz(self):
         # limpiamos la lista de reproduccion
