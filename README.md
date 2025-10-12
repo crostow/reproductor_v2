@@ -2,7 +2,7 @@
 
 reproductor `v2`: fork de https://github.com/crostow/reproductor_v2
 
-![](info_md/capture.png)
+![](info_md/capture2.png)
 
 ## Notas
 

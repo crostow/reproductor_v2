@@ -68,8 +68,8 @@ class Interfaz_reproductor(object):
 
 ####### widget inferior (controles y sliders)
         self.wdg_inferior = QWidget()
-        self.wdg_inferior.setMinimumHeight(300)
-        self.wdg_inferior.setMaximumHeight(300)
+        self.wdg_inferior.setMinimumHeight(134)
+        self.wdg_inferior.setMaximumHeight(134)
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_inferior.setStyleSheet("background-color: rgb(200, 200, 200);")  # Color claro
         self.layout_wdg_inferior = QVBoxLayout(self.wdg_inferior)
@@ -80,7 +80,7 @@ class Interfaz_reproductor(object):
         self.wdg_info = QWidget()
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_info.setStyleSheet("background-color: rgb(136, 75, 200);")
-        self.wdg_info.setMaximumHeight(150)
+        self.wdg_info.setMaximumHeight(40)
         self.layout_info = QHBoxLayout(self.wdg_info)
 
         # creamos los elementos mencionados informacion del video
@@ -103,44 +103,46 @@ class Interfaz_reproductor(object):
         # le damos css temporal para ver que se vayan creando bien
 
         self.wdg_controles.setStyleSheet("background-color: rgb(200, 189, 10);")
-        self.wdg_controles.setMinimumHeight(150)
+        self.wdg_controles.setMaximumHeight(70)
         self.layout_controles = QHBoxLayout(self.wdg_controles)
 
         # creamos los botones de control
+        tam_btn = 50
+        tam_icon = 40
         self.btn_lp = QPushButton()
-        self.btn_lp.setFixedSize(100, 100)
+        self.btn_lp.setFixedSize(tam_btn, tam_btn)
         self.btn_lp.setIcon(QIcon(":/anadir-lista.png"))
-        self.btn_lp.setIconSize(QSize(90, 90))
+        self.btn_lp.setIconSize(QSize(tam_icon, tam_icon))
 
 
         self.btn_play = QPushButton()
-        self.btn_play.setFixedSize(100, 100)
+        self.btn_play.setFixedSize(tam_btn, tam_btn)
         self.btn_play.setIcon(QIcon(":/boton-de-play.png"))
-        self.btn_play.setIconSize(QSize(90, 90))
+        self.btn_play.setIconSize(QSize(tam_icon, tam_icon))
 
 
         self.btn_anterior = QPushButton()
-        self.btn_anterior.setFixedSize(100, 100)
+        self.btn_anterior.setFixedSize(tam_btn, tam_btn)
         self.btn_anterior.setIcon(QIcon(":/atras.png"))
-        self.btn_anterior.setIconSize(QSize(90, 90))
+        self.btn_anterior.setIconSize(QSize(tam_icon, tam_icon))
 
         self.btn_stop = QPushButton()
-        self.btn_stop.setFixedSize(100, 100)
+        self.btn_stop.setFixedSize(tam_btn, tam_btn)
         self.btn_stop.setIcon(QIcon(":/boton-detener.png"))
-        self.btn_stop.setIconSize(QSize(90, 90))
+        self.btn_stop.setIconSize(QSize(tam_icon, tam_icon))
 
         self.btn_siguiente = QPushButton()
-        self.btn_siguiente.setFixedSize(100, 100)
+        self.btn_siguiente.setFixedSize(tam_btn, tam_btn)
         self.btn_siguiente.setIcon(QIcon(":/siguiente.png"))
-        self.btn_siguiente.setIconSize(QSize(90, 90))
+        self.btn_siguiente.setIconSize(QSize(tam_icon, tam_icon))
 
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
         self.lbl_volumen = QLabel()
-        self.lbl_volumen.setFixedSize(100, 100)
+        self.lbl_volumen.setFixedSize(100, tam_btn)
         pix =QPixmap(":/volumen_1.png")
-        max_icon = 90
+        max_icon = tam_icon
         scaled_pix = pix.scaled(
             max_icon, max_icon,
             Qt.AspectRatioMode.KeepAspectRatio,
