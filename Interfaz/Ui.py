@@ -12,7 +12,7 @@ class Interfaz_reproductor(object):
         MainWindow.setObjectName("MainWindow")
 
         # se le da un tamaño(ancho - alto )
-        MainWindow.resize(800, 300)
+        MainWindow.resize(550, 300)
 
         # widget central
         self.centralwidget = QWidget(MainWindow)
@@ -20,7 +20,7 @@ class Interfaz_reproductor(object):
         
         # layout principla
         self.layout_horizontal = QVBoxLayout(self.centralwidget)
-
+        self.layout_horizontal.setContentsMargins(4,0,4,4)
 
 
 ######## menu  y barar inferior
@@ -41,11 +41,14 @@ class Interfaz_reproductor(object):
 
 ######## widget superior (reproductor y lista de reproduccion)
         self.wdg_superior = QWidget()
+        self.wdg_superior.setStyleSheet("border:1px solid #000000")
         # le damos css temporal para ver que se vayan creando bien
-        self.wdg_superior.setStyleSheet("background-color: rgb(150, 150, 150);")  # Color claro
+        # self.wdg_superior.setStyleSheet("background-color: rgb(150, 150, 150);")  # Color claro
 
         # asignamos el tipo de layout que tendra
         self.layout_wdg_superior = QHBoxLayout(self.wdg_superior)
+        self.layout_wdg_superior.setContentsMargins(0,0,0,0)
+        self.layout_wdg_superior.setSpacing(0)
 
         # crearemos 2 widget mas uno para la lista de reproduccion y otro para el video 
         self.wdg_lista = ListaVideos()
@@ -53,7 +56,7 @@ class Interfaz_reproductor(object):
         self.wdg_lista.setMinimumHeight(300)
         self.wdg_lista.setMaximumWidth(300)
         # le damos css temporal para ver que se vayan creando bien
-        self.wdg_lista.setStyleSheet("background-color: rgb(130, 130, 130);")
+        # self.wdg_lista.setStyleSheet("background-color: rgba(0, 0, 0, 200);")
 
 
         # creamos el widget de video
@@ -195,6 +198,18 @@ class Interfaz_reproductor(object):
         # mandamos el widget central
         MainWindow.setCentralWidget(self.centralwidget)
 
+        # self.btn_lp.setFlat(True)
+        # self.btn_play.setFlat(True)
+        # self.btn_anterior.setFlat(True)
+        # self.btn_siguiente.setFlat(True)
+        # self.btn_stop.setFlat(True)
+
+    def setBackgroundColor(self, bg:str):
+        """asignar color de fondo al player(bg)"""
+        self.centralwidget.setStyleSheet(f"background-color: {bg}")
+        self.wdg_info.setStyleSheet(f"background-color: {bg}")
+        self.wdg_controles.setStyleSheet(f"background-color: {bg}")
+        self.menu_bar.setStyleSheet(f"background-color: {bg}")
 
 
 class ListaVideos(QListWidget):
