@@ -67,12 +67,25 @@ class Interfaz_reproductor(object):
 
 
 ####### widget inferior (controles y sliders)
+        # variables para los controles
+        margen_bot = 0
+        tam_btn = 35
+        tam_icon = tam_btn - 10
+        margen_btn = 0
+        h_sld_tiempo = 30
+        margen_sld_tiempo = 0
+        spacec = 0
+
+        # variables para los controles
         self.wdg_inferior = QWidget()
-        self.wdg_inferior.setMinimumHeight(134)
-        self.wdg_inferior.setMaximumHeight(134)
+        # self.wdg_inferior.setMinimumHeight(tam_btn + (margen_btn*2) + h_sld_tiempo + (margen_sld_tiempo*2))
+        print("tam bot", (tam_btn + (margen_btn*2) + h_sld_tiempo + (margen_sld_tiempo*2)))
+        self.wdg_inferior.setMaximumHeight(tam_btn + (margen_btn*2) + h_sld_tiempo + (margen_sld_tiempo*2)+spacec)
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_inferior.setStyleSheet("background-color: rgb(200, 200, 200);")  # Color claro
         self.layout_wdg_inferior = QVBoxLayout(self.wdg_inferior)
+        self.layout_wdg_inferior.setContentsMargins(margen_bot, margen_bot, margen_bot, margen_bot)
+        self.layout_wdg_inferior.setSpacing(spacec)
 
         # creamos los widget para el controles del reproductor e informacion del video
 
@@ -80,7 +93,7 @@ class Interfaz_reproductor(object):
         self.wdg_info = QWidget()
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_info.setStyleSheet("background-color: rgb(136, 75, 200);")
-        self.wdg_info.setMaximumHeight(40)
+        self.wdg_info.setMaximumHeight(h_sld_tiempo + (margen_sld_tiempo*2))
         self.layout_info = QHBoxLayout(self.wdg_info)
 
         # creamos los elementos mencionados informacion del video
@@ -103,12 +116,11 @@ class Interfaz_reproductor(object):
         # le damos css temporal para ver que se vayan creando bien
 
         self.wdg_controles.setStyleSheet("background-color: rgb(200, 189, 10);")
-        self.wdg_controles.setMaximumHeight(70)
+        self.wdg_controles.setMaximumHeight(tam_btn + (margen_btn*2))
         self.layout_controles = QHBoxLayout(self.wdg_controles)
+        self.layout_controles.setContentsMargins(margen_btn, margen_btn, margen_btn, margen_btn)
 
         # creamos los botones de control
-        tam_btn = 50
-        tam_icon = 40
         self.btn_lp = QPushButton()
         self.btn_lp.setFixedSize(tam_btn, tam_btn)
         self.btn_lp.setIcon(QIcon(":/anadir-lista.png"))
@@ -140,7 +152,9 @@ class Interfaz_reproductor(object):
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
         self.lbl_volumen = QLabel()
-        self.lbl_volumen.setFixedSize(100, tam_btn)
+        self.lbl_volumen.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lbl_volumen.setFixedSize(tam_btn, tam_btn)
+        # self.lbl_volumen.setStyleSheet("background-color: #ff0000;")
         pix =QPixmap(":/volumen_1.png")
         max_icon = tam_icon
         scaled_pix = pix.scaled(
@@ -156,7 +170,7 @@ class Interfaz_reproductor(object):
         self.vol_bar.setValue(50) # valor inicial
         self.vol_bar.setTickInterval(10)  # marcas cada 10 unidades
         self.vol_bar.setTickPosition(QSlider.TicksBelow)  # marcas abajo
-        self.vol_bar.setFixedSize(150, 30)
+        self.vol_bar.setFixedSize(150, tam_btn)
 
         # agregamos los botones al layout
         self.layout_controles.addWidget(self.btn_lp)
