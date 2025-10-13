@@ -209,47 +209,40 @@ class Interfaz_reproductor(object):
 
         # MainWindow.setStyleSheet("background-color: red")
         self.wdg_lista.setStyleSheet("""
-    /* 1. ESTILO BASE DE LA BARRA (TRACK) */
-    QScrollBar:horizontal {
-        border: 1px solid #101010;       /* Borde sutil */
-        background: #2D2D2D;             /* Fondo de la barra */
-        height: 12px;                    /* Altura de la barra */
-        /* ELIMINA LOS MÁRGENES: Esto asegura que el track ocupe todo el ancho */
-        margin: 0px 0px 0px 0px; 
-        border-radius: 6px;
-    }
-
-    /* 2. OCULTAR EL BOTÓN IZQUIERDO (SUB-LINE) */
-    QScrollBar::sub-line:horizontal {
-        border: none;
-        width: 0px;
-        height: 0px;
-        background: none;
-    }
-
-    /* 3. OCULTAR EL BOTÓN DERECHO (ADD-LINE) */
-    QScrollBar::add-line:horizontal {
-        border: none;
-        width: 0px;
-        height: 0px;
-        background: none;
-    }
-
-    /* ----------------------------------------------- */
-    /* 4. ESTILO DEL CONTROL DESLIZANTE (HANDLE) */
-    /* ----------------------------------------------- */
-    QScrollBar::handle:horizontal {
-        background: #101010;             /* Gris plomo para el control */
-        min-width: 20px;
-        border-radius: 5px;
-        border: 1px solid #303030;
-    }
-
-    /* Estilo del Handle al pasar el ratón (HOVER) */
-    QScrollBar::handle:horizontal:hover {
-        background: #000000;             /* Gris plomo más claro */
-    }
-""")
+            /* 1. ESTILO BASE DE LA BARRA (TRACK) */
+            QScrollBar:horizontal {
+                border: 1px solid #101010;
+                background: #2D2D2D;
+                height: 12px;
+                margin: 0px 0px 0px 0px; 
+                border-radius: 6px;
+            }
+            /* 2. OCULTAR EL BOTÓN IZQUIERDO (SUB-LINE) */
+            QScrollBar::sub-line:horizontal {
+                border: none;
+                width: 0px;
+                height: 0px;
+                background: none;
+            }
+            /* 3. OCULTAR EL BOTÓN DERECHO (ADD-LINE) */
+            QScrollBar::add-line:horizontal {
+                border: none;
+                width: 0px;
+                height: 0px;
+                background: none;
+            }
+            /* 4. ESTILO DEL CONTROL DESLIZANTE (HANDLE) */
+            QScrollBar::handle:horizontal {
+                background: #101010;
+                min-width: 20px;
+                border-radius: 5px;
+                border: 1px solid #303030;
+            }
+            /* Estilo del Handle al pasar el ratón (HOVER) */
+            QScrollBar::handle:horizontal:hover {
+                background: #000000;
+            }
+        """)
         
 
     def setBackgroundColor(self, bg:str):
