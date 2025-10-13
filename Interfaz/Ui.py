@@ -56,7 +56,7 @@ class Interfaz_reproductor(object):
         self.wdg_lista.setMinimumHeight(300)
         self.wdg_lista.setMaximumWidth(300)
         # le damos css temporal para ver que se vayan creando bien
-        # self.wdg_lista.setStyleSheet("background-color: rgba(0, 0, 0, 200);")
+        self.wdg_lista.setStyleSheet("background-color: rgba(0, 0, 0, 50);")
 
 
         # creamos el widget de video
@@ -102,16 +102,19 @@ class Interfaz_reproductor(object):
         # creamos los elementos mencionados informacion del video
         self.lbl_tiempo = QLabel()
         self.lbl_tiempo.setText("00:00:00")
+        self.lbl_tiempo.setStyleSheet("font-size:12pt;")
 
         self.sld_avance = QSlider(Qt.Horizontal)
 
 
         self.lbl_tiempo_total = QLabel()
         self.lbl_tiempo_total.setText("00:00:00")
+        self.lbl_tiempo_total.setStyleSheet("font-size:12pt;")
 
         self.layout_info.addWidget(self.lbl_tiempo)
         self.layout_info.addWidget(self.sld_avance)
         self.layout_info.addWidget(self.lbl_tiempo_total)
+        self.layout_info.setContentsMargins(0,0,0,0)
 
 
         # creamos el widget que contrenda los botones de control del reproductor
@@ -204,6 +207,51 @@ class Interfaz_reproductor(object):
         # self.btn_siguiente.setFlat(True)
         # self.btn_stop.setFlat(True)
 
+        # MainWindow.setStyleSheet("background-color: red")
+        self.wdg_lista.setStyleSheet("""
+    /* 1. ESTILO BASE DE LA BARRA (TRACK) */
+    QScrollBar:horizontal {
+        border: 1px solid #101010;       /* Borde sutil */
+        background: #2D2D2D;             /* Fondo de la barra */
+        height: 12px;                    /* Altura de la barra */
+        /* ELIMINA LOS MÁRGENES: Esto asegura que el track ocupe todo el ancho */
+        margin: 0px 0px 0px 0px; 
+        border-radius: 6px;
+    }
+
+    /* 2. OCULTAR EL BOTÓN IZQUIERDO (SUB-LINE) */
+    QScrollBar::sub-line:horizontal {
+        border: none;
+        width: 0px;
+        height: 0px;
+        background: none;
+    }
+
+    /* 3. OCULTAR EL BOTÓN DERECHO (ADD-LINE) */
+    QScrollBar::add-line:horizontal {
+        border: none;
+        width: 0px;
+        height: 0px;
+        background: none;
+    }
+
+    /* ----------------------------------------------- */
+    /* 4. ESTILO DEL CONTROL DESLIZANTE (HANDLE) */
+    /* ----------------------------------------------- */
+    QScrollBar::handle:horizontal {
+        background: #101010;             /* Gris plomo para el control */
+        min-width: 20px;
+        border-radius: 5px;
+        border: 1px solid #303030;
+    }
+
+    /* Estilo del Handle al pasar el ratón (HOVER) */
+    QScrollBar::handle:horizontal:hover {
+        background: #000000;             /* Gris plomo más claro */
+    }
+""")
+        
+
     def setBackgroundColor(self, bg:str):
         """asignar color de fondo al player(bg)"""
         self.centralwidget.setStyleSheet(f"background-color: {bg}")
@@ -217,6 +265,7 @@ class ListaVideos(QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAcceptDrops(True)
+        # self.setStyleBar()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -242,3 +291,43 @@ class ListaVideos(QListWidget):
             event.acceptProposedAction()
         else:
             event.ignore()
+
+    def setStyleBar(self):
+        self.setStyleSheet("""
+    /* 1. ESTILO BASE DEL WIDGET (el área de la barra) */
+    QListWidget {
+        background-color: #2D2D2D; /* Gris muy oscuro, fondo de la barra */
+        border: 1px solid #444444; /* Borde gris oscuro */
+        outline: 0; /* Importante para eliminar el foco por defecto */
+    }
+
+    /* 2. ESTILO DE LOS ÍTEMS NORMALES */
+    QListWidget::item {
+        background-color: transparent; /* Usa el fondo del widget */
+        color: #CCCCCC; /* Texto gris claro */
+        padding: 5px; /* Espacio interno para que se vean mejor */
+        margin: 2px 0; /* Pequeña separación entre ítems */
+    }
+
+    /* 3. ESTILO DE LOS ÍTEMS AL PASAR EL RATÓN */
+    QListWidget::item:hover {
+        background-color: #3A3A3A; /* Un gris ligeramente más claro que el fondo base */
+        color: #FFFFFF; /* Texto blanco */
+    }
+
+    /* 4. ESTILO DE LOS ÍTEMS SELECCIONADOS */
+    QListWidget::item:selected {
+        background-color: #606060; /* Gris plomo destacado para la selección */
+        color: #FFFFFF; /* Texto blanco para buen contraste */
+        border: 1px solid #777777; /* Borde sutil para resaltar aún más */
+        border-radius: 3px;
+    }
+
+    /* 5. ESTILO ADICIONAL: Barra de desplazamiento (Scrollbar) si es visible */
+    QScrollBar:vertical {
+        border: 1px solid #2D2D2D;
+        background: #ff0000; /* Fondo de la barra de desplazamiento */
+        width: 10px;
+        margin: 0px 0px 0px 0px;
+    }
+""")

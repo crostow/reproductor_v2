@@ -14,6 +14,7 @@ class Reproductor(QMainWindow):
         # Se crea la instancia de la lógica y se pasa la interfaz
         self.logica = modulo.Logica_reproductor(self.ui)
         self.ui.setBackgroundColor(bg='#14121C')
+        self.logica.mod_volumen(10)
 
 
 if __name__=="__main__":

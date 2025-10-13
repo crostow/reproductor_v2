@@ -11,4 +11,5 @@ CAMBIOS A LA INTERFAZ
 - he creado variables para asignar el tamaño de los botones de los controles para que se ajuste a los widgets que los contienen (tamaños, espaciado y margenes)
 - centrar el icono del volumen
 - agregue una funcion para asignar color de fondo al player, controles y al menubar
--
+- cambie el tamaño de la fuente de los labels del tiempo
+- cambie el estilo del scrollbar horizontal de la playlist
