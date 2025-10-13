@@ -38,17 +38,27 @@ class Interfaz_reproductor(object):
         # Agregar acción al menú
         self.menu_archivo.addAction(self.accion_abrir)
 # ================================================================================
+        margen_top = 0
+        # variables para los controles
+        margen_bot = 0 # margen interno wdg_inferior
+        margen_info = 0 # margen interno wdg_superior
+        margen_btn = 0 # margen interno wdg_controles
+        h_wdg_info = 30 # altura slider tiempo
+        tam_btn = 35 # tamaño de los botones
+        tam_icon = tam_btn - 10 # tamaño de los iconos de los botones
+        spacec = 0 # espacio entre wdg_superior y wdg_inferior
+        # variables para los controles
 
 ######## widget superior (reproductor y lista de reproduccion)
         self.wdg_superior = QWidget()
-        self.wdg_superior.setStyleSheet("border:1px solid #000000")
+        self.wdg_superior.setObjectName("wdg_superior") 
         # le damos css temporal para ver que se vayan creando bien
         # self.wdg_superior.setStyleSheet("background-color: rgb(150, 150, 150);")  # Color claro
 
         # asignamos el tipo de layout que tendra
         self.layout_wdg_superior = QHBoxLayout(self.wdg_superior)
-        self.layout_wdg_superior.setContentsMargins(0,0,0,0)
-        self.layout_wdg_superior.setSpacing(0)
+        self.layout_wdg_superior.setContentsMargins(margen_top, margen_top, margen_top, margen_top)
+        self.layout_wdg_superior.setSpacing(margen_top)
 
         # crearemos 2 widget mas uno para la lista de reproduccion y otro para el video 
         self.wdg_lista = ListaVideos()
@@ -70,20 +80,9 @@ class Interfaz_reproductor(object):
 
 
 ####### widget inferior (controles y sliders)
-        # variables para los controles
-        margen_bot = 0
-        tam_btn = 35
-        tam_icon = tam_btn - 10
-        margen_btn = 0
-        h_sld_tiempo = 30
-        margen_sld_tiempo = 0
-        spacec = 0
-
-        # variables para los controles
         self.wdg_inferior = QWidget()
-        # self.wdg_inferior.setMinimumHeight(tam_btn + (margen_btn*2) + h_sld_tiempo + (margen_sld_tiempo*2))
-        print("tam bot", (tam_btn + (margen_btn*2) + h_sld_tiempo + (margen_sld_tiempo*2)))
-        self.wdg_inferior.setMaximumHeight(tam_btn + (margen_btn*2) + h_sld_tiempo + (margen_sld_tiempo*2)+spacec)
+        h_wdg = tam_btn + (margen_btn*2) + h_wdg_info + (margen_info*2)+spacec + (margen_bot*2)
+        self.wdg_inferior.setMaximumHeight(h_wdg)
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_inferior.setStyleSheet("background-color: rgb(200, 200, 200);")  # Color claro
         self.layout_wdg_inferior = QVBoxLayout(self.wdg_inferior)
@@ -96,32 +95,32 @@ class Interfaz_reproductor(object):
         self.wdg_info = QWidget()
         # le damos css temporal para ver que se vayan creando bien
         self.wdg_info.setStyleSheet("background-color: rgb(136, 75, 200);")
-        self.wdg_info.setMaximumHeight(h_sld_tiempo + (margen_sld_tiempo*2))
+        self.wdg_info.setMinimumHeight(h_wdg_info + (margen_info*2))
+        self.wdg_info.setMaximumHeight(h_wdg_info + (margen_info*2))
         self.layout_info = QHBoxLayout(self.wdg_info)
 
         # creamos los elementos mencionados informacion del video
         self.lbl_tiempo = QLabel()
+        self.lbl_tiempo.setObjectName("lbl_tiempo")
         self.lbl_tiempo.setText("00:00:00")
-        self.lbl_tiempo.setStyleSheet("font-size:12pt;")
 
         self.sld_avance = QSlider(Qt.Horizontal)
 
-
         self.lbl_tiempo_total = QLabel()
+        self.lbl_tiempo_total.setObjectName("lbl_tiempo_total")
         self.lbl_tiempo_total.setText("00:00:00")
-        self.lbl_tiempo_total.setStyleSheet("font-size:12pt;")
 
         self.layout_info.addWidget(self.lbl_tiempo)
         self.layout_info.addWidget(self.sld_avance)
         self.layout_info.addWidget(self.lbl_tiempo_total)
-        self.layout_info.setContentsMargins(0,0,0,0)
-
+        self.layout_info.setContentsMargins(margen_info, margen_info, margen_info, margen_info)
 
         # creamos el widget que contrenda los botones de control del reproductor
         self.wdg_controles = QWidget()
         # le damos css temporal para ver que se vayan creando bien
 
         self.wdg_controles.setStyleSheet("background-color: rgb(200, 189, 10);")
+        self.wdg_controles.setMinimumHeight(tam_btn + (margen_btn*2))
         self.wdg_controles.setMaximumHeight(tam_btn + (margen_btn*2))
         self.layout_controles = QHBoxLayout(self.wdg_controles)
         self.layout_controles.setContentsMargins(margen_btn, margen_btn, margen_btn, margen_btn)
@@ -132,12 +131,10 @@ class Interfaz_reproductor(object):
         self.btn_lp.setIcon(QIcon(":/anadir-lista.png"))
         self.btn_lp.setIconSize(QSize(tam_icon, tam_icon))
 
-
         self.btn_play = QPushButton()
         self.btn_play.setFixedSize(tam_btn, tam_btn)
         self.btn_play.setIcon(QIcon(":/boton-de-play.png"))
         self.btn_play.setIconSize(QSize(tam_icon, tam_icon))
-
 
         self.btn_anterior = QPushButton()
         self.btn_anterior.setFixedSize(tam_btn, tam_btn)
@@ -160,7 +157,6 @@ class Interfaz_reproductor(object):
         self.lbl_volumen = QLabel()
         self.lbl_volumen.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lbl_volumen.setFixedSize(tam_btn, tam_btn)
-        # self.lbl_volumen.setStyleSheet("background-color: #ff0000;")
         pix =QPixmap(":/volumen_1.png")
         max_icon = tam_icon
         scaled_pix = pix.scaled(
@@ -201,50 +197,6 @@ class Interfaz_reproductor(object):
         # mandamos el widget central
         MainWindow.setCentralWidget(self.centralwidget)
 
-        # self.btn_lp.setFlat(True)
-        # self.btn_play.setFlat(True)
-        # self.btn_anterior.setFlat(True)
-        # self.btn_siguiente.setFlat(True)
-        # self.btn_stop.setFlat(True)
-
-        # MainWindow.setStyleSheet("background-color: red")
-        self.wdg_lista.setStyleSheet("""
-            /* 1. ESTILO BASE DE LA BARRA (TRACK) */
-            QScrollBar:horizontal {
-                border: 1px solid #101010;
-                background: #2D2D2D;
-                height: 12px;
-                margin: 0px 0px 0px 0px; 
-                border-radius: 6px;
-            }
-            /* 2. OCULTAR EL BOTÓN IZQUIERDO (SUB-LINE) */
-            QScrollBar::sub-line:horizontal {
-                border: none;
-                width: 0px;
-                height: 0px;
-                background: none;
-            }
-            /* 3. OCULTAR EL BOTÓN DERECHO (ADD-LINE) */
-            QScrollBar::add-line:horizontal {
-                border: none;
-                width: 0px;
-                height: 0px;
-                background: none;
-            }
-            /* 4. ESTILO DEL CONTROL DESLIZANTE (HANDLE) */
-            QScrollBar::handle:horizontal {
-                background: #101010;
-                min-width: 20px;
-                border-radius: 5px;
-                border: 1px solid #303030;
-            }
-            /* Estilo del Handle al pasar el ratón (HOVER) */
-            QScrollBar::handle:horizontal:hover {
-                background: #000000;
-            }
-        """)
-        
-
     def setBackgroundColor(self, bg:str):
         """asignar color de fondo al player(bg)"""
         self.centralwidget.setStyleSheet(f"background-color: {bg}")
@@ -252,13 +204,21 @@ class Interfaz_reproductor(object):
         self.wdg_controles.setStyleSheet(f"background-color: {bg}")
         self.menu_bar.setStyleSheet(f"background-color: {bg}")
 
+    def setModicationsSkin(self, app, file_qss):
+        """aplicar estilos del archivo qss"""
+        try:
+            with open(file_qss, "r") as file:
+                style = file.read()
+                app.setStyleSheet(style)
+        except Exception as err:
+            print(f'error cargando archivo qss: {err}')
+
 
 class ListaVideos(QListWidget):
     archivos_dropeados = Signal(list)  # señal que emitirá lista de rutas
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAcceptDrops(True)
-        # self.setStyleBar()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -284,43 +244,3 @@ class ListaVideos(QListWidget):
             event.acceptProposedAction()
         else:
             event.ignore()
-
-    def setStyleBar(self):
-        self.setStyleSheet("""
-    /* 1. ESTILO BASE DEL WIDGET (el área de la barra) */
-    QListWidget {
-        background-color: #2D2D2D; /* Gris muy oscuro, fondo de la barra */
-        border: 1px solid #444444; /* Borde gris oscuro */
-        outline: 0; /* Importante para eliminar el foco por defecto */
-    }
-
-    /* 2. ESTILO DE LOS ÍTEMS NORMALES */
-    QListWidget::item {
-        background-color: transparent; /* Usa el fondo del widget */
-        color: #CCCCCC; /* Texto gris claro */
-        padding: 5px; /* Espacio interno para que se vean mejor */
-        margin: 2px 0; /* Pequeña separación entre ítems */
-    }
-
-    /* 3. ESTILO DE LOS ÍTEMS AL PASAR EL RATÓN */
-    QListWidget::item:hover {
-        background-color: #3A3A3A; /* Un gris ligeramente más claro que el fondo base */
-        color: #FFFFFF; /* Texto blanco */
-    }
-
-    /* 4. ESTILO DE LOS ÍTEMS SELECCIONADOS */
-    QListWidget::item:selected {
-        background-color: #606060; /* Gris plomo destacado para la selección */
-        color: #FFFFFF; /* Texto blanco para buen contraste */
-        border: 1px solid #777777; /* Borde sutil para resaltar aún más */
-        border-radius: 3px;
-    }
-
-    /* 5. ESTILO ADICIONAL: Barra de desplazamiento (Scrollbar) si es visible */
-    QScrollBar:vertical {
-        border: 1px solid #2D2D2D;
-        background: #ff0000; /* Fondo de la barra de desplazamiento */
-        width: 10px;
-        margin: 0px 0px 0px 0px;
-    }
-""")

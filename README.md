@@ -2,7 +2,7 @@
 
 **reproductor v2** : fork de https://github.com/crostow/reproductor_v2
 
-![](info_md/capture2.png)
+![](info_md/capture3.png)
 
 ## Notas
 
@@ -13,3 +13,7 @@ CAMBIOS A LA INTERFAZ
 - agregue una funcion para asignar color de fondo al player, controles y al menubar
 - cambie el tamaño de la fuente de los labels del tiempo
 - cambie el estilo del scrollbar horizontal de la playlist
+- he creado un archivo `qss` para colocar los estilos y estos esten mas ordenados, ademas de la funcion para leer y aplicarlo
+- cambie el nombre de algunas variable que use para modificar los margenes entre los widgets
+- se puede quitar los estilos solo commentando las linea `setModicationsSkin` y `setBackgroundColor`
+
