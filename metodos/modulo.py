@@ -1,7 +1,8 @@
 from PySide6.QtCore import QUrl, QPropertyAnimation, QEasingCurve
-from PySide6.QtGui import QIcon, Qt, QPixmap
+from PySide6.QtGui import QIcon, Qt, QPixmap, QImage
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
+import cv2
 
 from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QListWidget
 
@@ -154,8 +155,6 @@ class Logica_reproductor:
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
 
-
-
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
         self.reproductor.stop()
@@ -177,6 +176,25 @@ class Logica_reproductor:
         if archivos:
             self.agregar_archivos(archivos)
 
+    def generar_miniatura(self, ruta):
+        # generamos una miniatura el el video para mostralo en la lista de reproduccion
+        captura = cv2.VideoCapture(ruta)
+        exito, frame = captura.read()
+        captura.release()
+
+        if not exito:
+            return None
+
+        # convertir de  bgr(opencv) a rgb(Qt)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        alto, ancho, canal = frame_rgb.shape
+        bytes = canal * ancho
+        imagen = QImage(frame_rgb.data, ancho, alto, bytes, QImage.Format_RGB888)
+
+        pixmap = QPixmap.fromImage(imagen).scaled(100, 60)
+        print("entra a la miniaturaA")
+        return QIcon(pixmap)
+
     def agregar_archivos(self, archivos):
         formatos_permitidos = (".mp4", ".avi", ".mkv", ".mov")
 
@@ -191,10 +209,10 @@ class Logica_reproductor:
 
             if directorio_archivo in archivos:
                 self.lista_reproduccion.append(directorio_archivo)
-
+                icono = self.generar_miniatura(directorio_archivo)
                 nombre_archivo = os.path.basename(directorio_archivo)
                 # agregamos el nombre del archivo a la lista de reproduccion
-                item = QListWidgetItem(nombre_archivo)
+                item = QListWidgetItem(icono, nombre_archivo)
                 item.setData(Qt.UserRole, directorio_archivo)
                 self.ui.wdg_lista.addItem(item)
 
@@ -258,7 +276,6 @@ class Logica_reproductor:
         self.salida_audio = QAudioOutput()
         # asignamos audio del video a la salida de audio
         self.reproductor.setAudioOutput(self.salida_audio)
-
 
     def limpiar_interfaz(self):
         # limpiamos la lista de reproduccion
