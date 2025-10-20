@@ -139,7 +139,7 @@ class Interfaz_reproductor(object):
 
         self.lbl_volumen = QLabel()
         self.lbl_volumen.setFixedSize(100, 100)
-        pix =QPixmap(":/volumen_1.png")
+        pix = QPixmap(":/volumen_1.png")
         max_icon = 90
         scaled_pix = pix.scaled(
             max_icon, max_icon,

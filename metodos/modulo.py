@@ -1,7 +1,8 @@
 from PySide6.QtCore import QUrl, QPropertyAnimation, QEasingCurve
-from PySide6.QtGui import QIcon, Qt
+from PySide6.QtGui import QIcon, Qt, QPixmap, QImage
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
+import cv2
 
 from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QListWidget
 
@@ -13,11 +14,13 @@ class Logica_reproductor:
 
         # designamos la lista para que acepte arrastar y pegar
         self.ui.wdg_lista.setAcceptDrops(True)
+        # self.lista_videos.setAcceptDrops(True)
 
         # verificamos que todo se inicie correctamente
         self.limpiar_interfaz()
 
         # lista de rutas completas
+
         self.lista_reproduccion = []
         self.indice_actual = -1
 
@@ -36,6 +39,8 @@ class Logica_reproductor:
         self.ui.wdg_lista.itemDoubleClicked.connect(self.reproducir_item)
         # Conectar la acción a tu metodo
         self.ui.accion_abrir.triggered.connect(self.abrir_archivo)
+        # conectamos el boton de play para buscar archivos tambien
+        # self.ui.btn_play.clicked.connect(self.abrir_archivo)
         # conectar slider de volumen
         self.ui.vol_bar.valueChanged.connect(self.mod_volumen)
         # conectar btn_lp a metodo para ocultar la lp
@@ -52,7 +57,7 @@ class Logica_reproductor:
         self.ui.btn_anterior.clicked.connect(self.anterior_video)
 
     def siguiente_video(self):
-        """Reproduce el siguiente video en la lista si existe"""
+        #"Reproduce el siguiente video en la lista si existe
         if self.indice_actual + 1 < len(self.lista_reproduccion):
             self.indice_actual += 1
             self.reproducir_video()
@@ -60,7 +65,7 @@ class Logica_reproductor:
             print("Fin de la lista de reproducción")
 
     def anterior_video(self):
-        """Reproduce el video anterior si existe"""
+        #Reproduce el video anterior si existe
         if self.indice_actual > 0:
             self.indice_actual -= 1
             self.reproducir_video()
@@ -68,10 +73,12 @@ class Logica_reproductor:
             print("Inicio de la lista de reproducción")
 
     def actualizar_botones(self):
+        # actualiza los botones cuando detecta cambios posicion en la lista de reproduccion
         self.ui.btn_anterior.setEnabled(self.indice_actual > 0)
         self.ui.btn_siguiente.setEnabled(self.indice_actual < len(self.lista_reproduccion) - 1)
 
     def stop(self):
+        # desactiva los botones cuando se detenie el video
         self.reproductor.stop()
         self.ui.btn_play.setIcon(QIcon(":/boton-de-play.png"))
         self.ui.btn_play.setEnabled(False)
@@ -92,12 +99,10 @@ class Logica_reproductor:
             self.reproductor.play()
 
     def revisar_final(self, status):
-        # revisa cuando el video se termina si debe continuar o no
         if status == QMediaPlayer.EndOfMedia:
             self.indice_actual+= 1
             if self.indice_actual < len(self.lista_reproduccion):
                 self.reproducir_video()
-            self.actualizar_botones()
 
     def lp_cambio(self):
         # tomamos el valor del ancho actual de la lp
@@ -119,8 +124,38 @@ class Logica_reproductor:
         self.animacion.start()
 
     def mod_volumen(self, valor):
-        # cabion de valor de audio dependiendo el valor del slider
+        # cabio de valor de audio dependiendo el valor del slider
         self.salida_audio.setVolume(valor/100)
+        if valor <= 100 and valor >= 80:
+            print("alto")
+            pix = QPixmap(":/volumen_2.png")
+            max_icon = 90
+            scaled_pix = pix.scaled(
+                max_icon, max_icon,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.ui.lbl_volumen.setPixmap(scaled_pix)
+        elif valor <= 80 and valor >0:
+            print("medio")
+            pix = QPixmap(":/volumen_1.png")
+            max_icon = 90
+            scaled_pix = pix.scaled(
+                max_icon, max_icon,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.ui.lbl_volumen.setPixmap(scaled_pix)
+        elif valor == 0:
+            print("bajo")
+            pix = QPixmap(":/silencio.png")
+            max_icon = 90
+            scaled_pix = pix.scaled(
+                max_icon, max_icon,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.ui.lbl_volumen.setPixmap(scaled_pix)
 
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
@@ -132,6 +167,9 @@ class Logica_reproductor:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
 
+
+
+
     def abrir_archivo(self, archivo=None):
         archivos, _ = QFileDialog.getOpenFileNames(
             None, "Selecciona el video",
@@ -139,9 +177,27 @@ class Logica_reproductor:
             "Videos (*.mp4 *.avi *.mkv *.mov)"
         )
 
-
         if archivos:
             self.agregar_archivos(archivos)
+
+    def generar_miniatura(self, ruta):
+        # generamos una miniatura el el video para mostralo en la lista de reproduccion
+        captura = cv2.VideoCapture(ruta)
+        exito, frame = captura.read()
+        captura.release()
+
+        if not exito:
+            return None
+
+        # convertir de  bgr(opencv) a rgb(Qt)
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        alto, ancho, canal = frame_rgb.shape
+        bytes = canal * ancho
+        imagen = QImage(frame_rgb.data, ancho, alto, bytes, QImage.Format_RGB888)
+
+        pixmap = QPixmap.fromImage(imagen).scaled(100, 60)
+        print("entra a la miniaturaA")
+        return QIcon(pixmap)
 
     def agregar_archivos(self, archivos):
         formatos_permitidos = (".mp4", ".avi", ".mkv", ".mov")
@@ -157,14 +213,12 @@ class Logica_reproductor:
 
             if directorio_archivo in archivos:
                 self.lista_reproduccion.append(directorio_archivo)
-                # creamos QUrl para el reproductor
-                # nombre_archivo = QUrl.fromLocalFile(directorio_archivo)
-
-                # obtenemos el nombre del archivo
+                icono = self.generar_miniatura(directorio_archivo)
                 nombre_archivo = os.path.basename(directorio_archivo)
                 # agregamos el nombre del archivo a la lista de reproduccion
-                item = QListWidgetItem(nombre_archivo)
+                item = QListWidgetItem(icono, nombre_archivo)
                 item.setData(Qt.UserRole, directorio_archivo)
+
                 self.ui.wdg_lista.addItem(item)
 
                 if self.reproductor.mediaStatus() != QMediaPlayer.LoadedMedia and self.indice_actual == -1:
