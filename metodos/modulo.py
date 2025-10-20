@@ -1,10 +1,12 @@
+from getopt import error
+
 from PySide6.QtCore import QUrl, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QIcon, Qt, QPixmap, QImage
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
 import cv2
 
-from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QListWidget
+from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QMessageBox
 
 
 class Logica_reproductor:
@@ -51,6 +53,38 @@ class Logica_reproductor:
         self.ui.btn_siguiente.clicked.connect(self.siguiente_video)
         # señal para video anterior
         self.ui.btn_anterior.clicked.connect(self.anterior_video)
+        # señal para detectar algun error al reproducir el video y mandar mensaje de error
+        self.reproductor.errorOccurred.connect(self.manejar_error)
+        # señal para detectar estado de errorerror al reproducir el video y mandar mensaje de error
+        self.reproductor.errorOccurred.connect(self.verificar_estado)
+
+    def verificar_estado(self, status):
+        if status == QMediaPlayer.InvalidMedia:
+            QMessageBox.critical(
+                None,
+                "Archivo no válido",
+                "El archivo seleccionado no es un video válido o está dañado."
+            )
+        elif status == QMediaPlayer.NoMedia:
+            QMessageBox.information(
+                None,
+                "Sin medios",
+                "No hay ningún video cargado para reproducir."
+            )
+
+    def manejar_error(self, error, errorString):
+        if error != self.reproductor.NoError:
+            QMessageBox.warning(
+                None,
+                "Error de reproducción",
+                f"No se pudo reproducir el video.\n\nDetalles: {errorString}"
+            )
+            # saltar al siguiente video
+            self.indice_actual += 1
+            if self.indice_actual < len(self.lista_reproduccion):
+                self.reproducir_video()
+            else:
+                self.indice_actual = -1
 
     def siguiente_video(self):
         #"Reproduce el siguiente video en la lista si existe
