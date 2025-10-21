@@ -1,5 +1,3 @@
-from getopt import error
-
 from PySide6.QtCore import QUrl, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QIcon, Qt, QPixmap, QImage
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput

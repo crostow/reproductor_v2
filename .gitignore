@@ -1,0 +1,17 @@
+# Carpetas de PyCharm
+.idea/
+iconos/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+.venv/
+venv/
+
+#archivo faltantes
+faltantes.txt
+reload_ui.py

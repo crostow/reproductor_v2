@@ -1,10 +1,12 @@
 from PySide6.QtCore import Qt, QSize, Signal
-from PySide6.QtGui import QIcon, QPixmap, QAction
+from PySide6.QtGui import QIcon, QPixmap, QAction, QActionGroup
 from PySide6.QtMultimedia import QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLabel, QSlider, QPushButton, QSizePolicy, \
     QMenuBar
-import iconos_rc
+
+from Interfaz import iconos_rc
+
 class Interfaz_reproductor(object):
     def setupUi(self,MainWindow):
 
@@ -31,9 +33,32 @@ class Interfaz_reproductor(object):
 
         # creamos el menu archivo
         self.menu_archivo = self.menu_bar.addMenu("Archivo")  # ✅ guardamos en otra variable
+        self.menu_herramientas = self.menu_bar.addMenu("Herramientas")  # ✅ guardamos en otra variable
 
         # Crear acción "Abrir"
         self.accion_abrir = QAction("Abrir", MainWindow)
+
+        # agregamos un submenu en el menu herramientas
+        self.submenu_tema = self.menu_herramientas.addMenu("Temas")
+
+        # crear acction para temas claro y oscuro
+        self.accion_claro = QAction("claro", MainWindow)
+        self.accion_claro.setCheckable(True)
+
+        self.accion_oscuro = QAction("oscuro", MainWindow)
+        self.accion_oscuro.setCheckable(True)
+
+        self.grupo_temas = QActionGroup(MainWindow)
+        self.grupo_temas.setExclusive(True)
+        self.grupo_temas.addAction(self.accion_claro)
+        self.grupo_temas.addAction(self.accion_oscuro)
+
+
+
+
+        # los agregamos al menu de herramientas
+        self.submenu_tema.addAction(self.accion_claro)
+        self.submenu_tema.addAction(self.accion_oscuro)
 
         # Agregar acción al menú
         self.menu_archivo.addAction(self.accion_abrir)
@@ -42,7 +67,7 @@ class Interfaz_reproductor(object):
 ######## widget superior (reproductor y lista de reproduccion)
         self.wdg_superior = QWidget()
         # le damos css temporal para ver que se vayan creando bien
-        self.wdg_superior.setStyleSheet("background-color: rgb(150, 150, 150);")  # Color claro
+        # self.wdg_superior.setStyleSheet("background-color: rgb(150, 150, 150);")  # Color claro
 
         # asignamos el tipo de layout que tendra
         self.layout_wdg_superior = QHBoxLayout(self.wdg_superior)
@@ -53,7 +78,7 @@ class Interfaz_reproductor(object):
         self.wdg_lista.setMinimumHeight(300)
         self.wdg_lista.setMaximumWidth(300)
         # le damos css temporal para ver que se vayan creando bien
-        self.wdg_lista.setStyleSheet("background-color: rgb(130, 130, 130);")
+        # self.wdg_lista.setStyleSheet("background-color: rgb(130, 130, 130);")
 
 
         # creamos el widget de video
@@ -71,7 +96,7 @@ class Interfaz_reproductor(object):
         self.wdg_inferior.setMinimumHeight(300)
         self.wdg_inferior.setMaximumHeight(300)
         # le damos css temporal para ver que se vayan creando bien
-        self.wdg_inferior.setStyleSheet("background-color: rgb(200, 200, 200);")  # Color claro
+        # self.wdg_inferior.setStyleSheet("background-color: rgb(200, 200, 200);")  # Color claro
         self.layout_wdg_inferior = QVBoxLayout(self.wdg_inferior)
 
         # creamos los widget para el controles del reproductor e informacion del video
@@ -79,7 +104,7 @@ class Interfaz_reproductor(object):
         # widget que contendra tiempo transcurrido, slider de avance y tiempo de duracion
         self.wdg_info = QWidget()
         # le damos css temporal para ver que se vayan creando bien
-        self.wdg_info.setStyleSheet("background-color: rgb(136, 75, 200);")
+        # self.wdg_info.setStyleSheet("background-color: rgb(136, 75, 200);")
         self.wdg_info.setMaximumHeight(150)
         self.layout_info = QHBoxLayout(self.wdg_info)
 
@@ -102,7 +127,7 @@ class Interfaz_reproductor(object):
         self.wdg_controles = QWidget()
         # le damos css temporal para ver que se vayan creando bien
 
-        self.wdg_controles.setStyleSheet("background-color: rgb(200, 189, 10);")
+        # self.wdg_controles.setStyleSheet("background-color: rgb(200, 189, 10);")
         self.wdg_controles.setMinimumHeight(150)
         self.layout_controles = QHBoxLayout(self.wdg_controles)
 
@@ -178,8 +203,6 @@ class Interfaz_reproductor(object):
         
         # mandamos el widget central
         MainWindow.setCentralWidget(self.centralwidget)
-
-
 
 class ListaVideos(QListWidget):
     archivos_dropeados = Signal(list)  # señal que emitirá lista de rutas
