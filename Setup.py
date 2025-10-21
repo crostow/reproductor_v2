@@ -30,21 +30,15 @@ if __name__=="__main__":
     tema = configuracion.tema_guardado()
     configuracion.aplicar_tema(app, tema)
 
-
     repro = Reproductor()
-
-
     def cambiar_a_claro():
         configuracion.aplicar_tema(app, "claro")
         repro.ui.accion_claro.setChecked(True)
         repro.ui.accion_oscuro.setChecked(False)
-
-
     def cambiar_a_oscuro():
         configuracion.aplicar_tema(app, "oscuro")
         repro.ui.accion_oscuro.setChecked(True)
         repro.ui.accion_claro.setChecked(False)
-
 
     # Conectar las acciones
     repro.ui.accion_claro.triggered.connect(cambiar_a_claro)
