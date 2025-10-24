@@ -62,7 +62,7 @@ class Logica_reproductor:
         # señal para detectar algun error al reproducir el video y mandar mensaje de error
         self.reproductor.errorOccurred.connect(self.manejar_error)
         # señal para detectar estado de errorerror al reproducir el video y mandar mensaje de error
-        self.reproductor.errorOccurred.connect(self.verificar_estado)
+        self.reproductor.mediaStatusChanged.connect(self.verificar_estado)
 
     def verificar_estado(self, status):
         if status == QMediaPlayer.InvalidMedia:
@@ -160,11 +160,15 @@ class Logica_reproductor:
         self.animacion.start()
 
     def mod_volumen(self, valor):
+        tema = configuracion.iconos_guardados()
+        prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
+        print(prefijo)
+
         # cabio de valor de audio dependiendo el valor del slider
         self.salida_audio.setVolume(valor/100)
         if valor <= 100 and valor >= 80:
             print("alto")
-            pix = QPixmap(":/volumen_2.png")
+            pix = QPixmap(prefijo + "volumen_2.png")
             max_icon = 90
             scaled_pix = pix.scaled(
                 max_icon, max_icon,
@@ -174,7 +178,7 @@ class Logica_reproductor:
             self.ui.lbl_volumen.setPixmap(scaled_pix)
         elif valor <= 80 and valor >0:
             print("medio")
-            pix = QPixmap(":/volumen_1.png")
+            pix = QPixmap(prefijo + "volumen_1.png")
             max_icon = 90
             scaled_pix = pix.scaled(
                 max_icon, max_icon,
@@ -184,7 +188,7 @@ class Logica_reproductor:
             self.ui.lbl_volumen.setPixmap(scaled_pix)
         elif valor == 0:
             print("bajo")
-            pix = QPixmap(":/silencio.png")
+            pix = QPixmap(prefijo + "silencio.png")
             max_icon = 90
             scaled_pix = pix.scaled(
                 max_icon, max_icon,
@@ -192,6 +196,7 @@ class Logica_reproductor:
                 Qt.TransformationMode.SmoothTransformation
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
+
 
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
