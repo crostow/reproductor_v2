@@ -3,14 +3,18 @@ from PySide6.QtGui import QIcon, Qt, QPixmap, QImage
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import os
 import cv2
-
+# import configuracion
 from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QMessageBox
+
+from metodos import configuracion
+from metodos.configuracion import aplicar_tema
 
 
 class Logica_reproductor:
     def __init__(self, ui):
         # cargamos la interfaz en la variable self.ui
         self.ui = ui
+
 
         # designamos la lista para que acepte arrastar y pegar
         self.ui.wdg_lista.setAcceptDrops(True)
@@ -20,12 +24,12 @@ class Logica_reproductor:
         self.limpiar_interfaz()
 
         # lista de rutas completas
-
         self.lista_reproduccion = []
         self.indice_actual = -1
 
         # creamos el reproductor
         self.creacion_reproductor()
+
 
         # ejecutamos una señal para cuando se arrasten los archivos se ejecute un metodo
         self.ui.wdg_lista.archivos_dropeados.connect(self.agregar_archivos)

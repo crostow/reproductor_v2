@@ -40,6 +40,7 @@ class Interfaz_reproductor(object):
 
         # agregamos un submenu en el menu herramientas
         self.submenu_tema = self.menu_herramientas.addMenu("Temas")
+        self.submenu_iconos = self.menu_herramientas.addMenu("Iconos")
 
         # crear acction para temas claro y oscuro
         self.accion_claro = QAction("claro", MainWindow)
@@ -48,17 +49,35 @@ class Interfaz_reproductor(object):
         self.accion_oscuro = QAction("oscuro", MainWindow)
         self.accion_oscuro.setCheckable(True)
 
+
+        # creamos los action para cambiar de iconos
+        self.iconos_claro = QAction("claro", MainWindow)
+        self.iconos_claro.setCheckable(True)
+
+        self.iconos_oscuro = QAction("oscuro", MainWindow)
+        self.iconos_oscuro.setCheckable(True)
+
+
+        # los agregamos los acction de tema a un grupo para que solo púeda estar seleccionado uno a la vez
         self.grupo_temas = QActionGroup(MainWindow)
         self.grupo_temas.setExclusive(True)
         self.grupo_temas.addAction(self.accion_claro)
         self.grupo_temas.addAction(self.accion_oscuro)
 
-
+        # los agregamos los acction de iconos a un grupo para que solo púeda estar seleccionado uno a la vez
+        self.grupo_iconos = QActionGroup(MainWindow)
+        self.grupo_iconos.setExclusive(True)
+        self.grupo_iconos.addAction(self.iconos_claro)
+        self.grupo_iconos.addAction(self.iconos_oscuro)
 
 
         # los agregamos al menu de herramientas
         self.submenu_tema.addAction(self.accion_claro)
         self.submenu_tema.addAction(self.accion_oscuro)
+
+        # los agregamos al menu iconos
+        self.submenu_iconos.addAction(self.iconos_claro)
+        self.submenu_iconos.addAction(self.iconos_oscuro)
 
         # Agregar acción al menú
         self.menu_archivo.addAction(self.accion_abrir)
@@ -136,19 +155,19 @@ class Interfaz_reproductor(object):
         # creamos los botones de control
         self.btn_lp = QPushButton()
         self.btn_lp.setFixedSize(100, 100)
-        self.btn_lp.setIcon(QIcon(":/anadir-lista.png"))
+        self.btn_lp.setIcon(QIcon(":oscuro/anadir-lista.png"))
         self.btn_lp.setIconSize(QSize(90, 90))
 
 
         self.btn_play = QPushButton()
         self.btn_play.setFixedSize(100, 100)
-        self.btn_play.setIcon(QIcon(":/boton-de-play.png"))
+        self.btn_play.setIcon(QIcon(":oscuro/boton-de-play.png"))
         self.btn_play.setIconSize(QSize(90, 90))
 
 
         self.btn_anterior = QPushButton()
         self.btn_anterior.setFixedSize(100, 100)
-        self.btn_anterior.setIcon(QIcon(":/atras.png"))
+        self.btn_anterior.setIcon(QIcon(":oscuro/atras.png"))
         self.btn_anterior.setIconSize(QSize(90, 90))
 
         self.btn_stop = QPushButton()
