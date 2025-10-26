@@ -196,6 +196,7 @@ class Interfaz_reproductor(object):
 
         # barra de sonido
         self.vol_bar = QSlider(Qt.Horizontal)
+        self.vol_bar.setObjectName("vol_bar")
         self.vol_bar.setRange(0, 100) # volumen de o a 100
         self.vol_bar.setValue(50) # valor inicial
         self.vol_bar.setTickInterval(10)  # marcas cada 10 unidades

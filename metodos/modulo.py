@@ -123,14 +123,17 @@ class Logica_reproductor:
         self.ui.btn_anterior.setEnabled(False)
 
     def play_pausa(self):
+        tema = configuracion.iconos_guardados()
+        prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
+        print(prefijo)
         # funcion para el cambio de estado del boton pausa
         estado_repro = self.reproductor.playbackState()
         print(estado_repro)
         if estado_repro == QMediaPlayer.PlayingState:
-            self.ui.btn_play.setIcon(QIcon(":/boton-de-play.png"))
+            self.ui.btn_play.setIcon(QIcon(prefijo +"boton-de-play.png"))
             self.reproductor.pause()
         elif estado_repro == QMediaPlayer.PausedState:
-            self.ui.btn_play.setIcon(QIcon(":/pausa.png"))
+            self.ui.btn_play.setIcon(QIcon(prefijo + "pausa.png"))
             # self.ui.btn_play.setIcon(QIcon(":/pause.png"))
             self.reproductor.play()
 
@@ -197,7 +200,6 @@ class Logica_reproductor:
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
 
-
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
         self.reproductor.stop()
@@ -207,9 +209,6 @@ class Logica_reproductor:
         if ruta:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
-
-
-
 
     def abrir_archivo(self, archivo=None):
         archivos, _ = QFileDialog.getOpenFileNames(
@@ -280,8 +279,11 @@ class Logica_reproductor:
             self.ui.wdg_lista.setCurrentRow(self.indice_actual)
 
     def activar_btns(self):
+        tema = configuracion.iconos_guardados()
+        prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
+        print(prefijo)
         self.ui.btn_play.setEnabled(True)
-        self.ui.btn_play.setIcon(QIcon(":/pausa.png"))
+        self.ui.btn_play.setIcon(QIcon(prefijo +"pausa.png"))
         self.ui.btn_anterior.setEnabled(True)
         self.ui.btn_stop.setEnabled(True)
         self.ui.btn_siguiente.setEnabled(True)
