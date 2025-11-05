@@ -1,3 +1,4 @@
+from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtCore import QEvent, QTimer
@@ -13,7 +14,7 @@ class Bandeja_de_sistema():
 
         # creamos el icono del tray
         self.tray_icon = QSystemTrayIcon(self.ventana)
-        self.tray_icon.setIcon(QIcon("Interfaz/icon_barra"))
+        self.tray_icon.setIcon(QIcon("Interfaz/icon_barra.png"))
         self.tray_icon.setToolTip("Reproductor de video")
 
         # menu contextual
@@ -23,9 +24,9 @@ class Bandeja_de_sistema():
         accion_mostrar.triggered.connect(self.mostrar_ventana)
         menu.addAction(accion_mostrar)
 
-        accion_pausar = QAction("Pausar")
-        accion_pausar.triggered.connect(self.pausar_video)
-        menu.addAction(accion_pausar)
+        self.accion_pausar = QAction("Pausar", self.ventana)
+        self.accion_pausar.triggered.connect(self.pausar_video)
+        menu.addAction(self.accion_pausar)
 
         accion_salir = QAction("Salir", self.ventana)
         accion_salir.triggered.connect(self.salir_app)
@@ -41,7 +42,7 @@ class Bandeja_de_sistema():
     def _conectar_eventos(self):
         # inyecta eventos personalizados para la ventana principal
         ventana_original_change = self.ventana.changeEvent
-        ventana_original_close = self.ventana.changeEvent
+        ventana_original_close = self.ventana.closeEvent
 
         def nuevo_change_event(event):
             if event.type() == QEvent.WindowStateChange and self.ventana.isMinimized():
@@ -73,7 +74,13 @@ class Bandeja_de_sistema():
 
     def pausar_video(self):
         if hasattr(self.logica, "reproductor"):
-            self.logica.reproductor.pause()
+            estado = self.logica.reproductor.playbackState()
+            if estado == QMediaPlayer.PlayingState:
+                self.logica.reproductor.pause()
+                self.accion_pausar.setText("Reanudar")
+            elif estado == QMediaPlayer.PausedState:
+                self.logica.reproductor.play()
+                self.accion_pausar.setText("Pausar")
 
     def salir_app(self):
         self.tray_icon.hide()
