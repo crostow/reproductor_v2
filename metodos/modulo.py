@@ -200,6 +200,7 @@ class Logica_reproductor:
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
 
+
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
         self.reproductor.stop()
@@ -209,6 +210,9 @@ class Logica_reproductor:
         if ruta:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
+
+
+
 
     def abrir_archivo(self, archivo=None):
         archivos, _ = QFileDialog.getOpenFileNames(

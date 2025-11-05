@@ -15,6 +15,7 @@ class Reproductor(QMainWindow):
         self.logica = modulo.Logica_reproductor(self.ui)
 
         configuracion.conectar_cambio_tema(self.ui, self.logica)
+
         configuracion.conectar_cambio_iconos(self.ui)
 
 
