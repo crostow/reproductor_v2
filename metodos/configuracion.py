@@ -1,6 +1,7 @@
 import os
 from PySide6.QtCore import QSettings, QSize
 from PySide6.QtGui import QIcon, QPixmap, Qt
+from PySide6.QtMultimedia import QMediaPlayer
 from PySide6.QtWidgets import QApplication
 
 
@@ -33,12 +34,12 @@ def tema_guardado():
     settings = QSettings("MiEmpresa", "MiReproductor")
     return settings.value("tema", "oscuro")
 
-def conectar_cambio_tema(ui):
+def conectar_cambio_tema(ui, logica):
     """
     Conecta las acciones del menú (claro / oscuro) y actualiza su estado.
     """
-    ui.accion_claro.triggered.connect(lambda: cambiar_tema(ui, "claro"))
-    ui.accion_oscuro.triggered.connect(lambda: cambiar_tema(ui, "oscuro"))
+    ui.accion_claro.triggered.connect(lambda: cambiar_tema(ui, logica,"claro"))
+    ui.accion_oscuro.triggered.connect(lambda: cambiar_tema(ui, logica, "oscuro"))
 
     # Cargar estado inicial
     tema = tema_guardado()
@@ -49,10 +50,19 @@ def conectar_cambio_tema(ui):
         ui.accion_oscuro.setChecked(True)
         ui.accion_claro.setChecked(False)
 
-def cambiar_tema(ui, nombre_tema):
+def cambiar_tema(ui, logica, nombre_tema):
     """
     Cambia el tema en tiempo real, aplica el QSS y guarda la preferencia.
     """
+    check_claro_anterior = ui.accion_claro.isChecked()
+    check_oscuro_anterior = ui.accion_oscuro.isChecked()
+
+    if logica.reproductor.playbackState() == QMediaPlayer.PlayingState:
+        print("Cambio de tema bloqueado: video en reproducción")
+        ui.accion_claro.setChecked(check_claro_anterior)
+        ui.accion_oscuro.setChecked(check_oscuro_anterior)
+        return  # Bloquea el cambio
+
     app = QApplication.instance()
     aplicar_tema(app, nombre_tema)
 

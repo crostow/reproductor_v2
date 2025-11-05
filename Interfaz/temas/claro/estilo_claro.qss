@@ -66,6 +66,9 @@ QListWidget {
     background-color: #FFFFFF;
     border: 1px solid #B0B0B0;
     color: #2E2E2E;
+    width: 300px;  /* Ancho fijo */
+    min-width: 300px;
+    max-width: 300px;
 }
 
 /* Video widget (opcional) */

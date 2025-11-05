@@ -94,8 +94,10 @@ class Interfaz_reproductor(object):
         # crearemos 2 widget mas uno para la lista de reproduccion y otro para el video 
         self.wdg_lista = ListaVideos()
         # self.wdg_lista = QListWidget()
+        self.wdg_lista.setUniformItemSizes(True)
         self.wdg_lista.setMinimumHeight(300)
         self.wdg_lista.setMaximumWidth(300)
+        # self.wdg_lista.setFixedWidth(300)
         # le damos css temporal para ver que se vayan creando bien
         # self.wdg_lista.setStyleSheet("background-color: rgb(130, 130, 130);")
 
@@ -262,6 +264,7 @@ class VideoWidgetPersonalizado(QVideoWidget):
         super().__init__(parent)
         self._pantalla_completa = False
         self._ventana_principal = None  # referencia al QMainWindow (se asigna luego)
+
 
     def setMainWindow(self, main_window):
         """Permite guardar referencia al QMainWindow para restaurar correctamente."""
