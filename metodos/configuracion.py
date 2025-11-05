@@ -1,7 +1,8 @@
 import os
 from PySide6.QtCore import QSettings, QSize
 from PySide6.QtGui import QIcon, QPixmap, Qt
-from PySide6.QtWidgets import QApplication
+from PySide6.QtMultimedia import QMediaPlayer
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 
 def aplicar_tema(app, nombre_tema):
@@ -33,36 +34,70 @@ def tema_guardado():
     settings = QSettings("MiEmpresa", "MiReproductor")
     return settings.value("tema", "oscuro")
 
-def conectar_cambio_tema(ui):
+def conectar_cambio_tema(ui, logica):
     """
-    Conecta las acciones del menú (claro / oscuro) y actualiza su estado.
+    Conecta las acciones del menú (claro / oscuro),
+    bloquea el cambio si el reproductor está reproduciendo o en pausa,
+    y garantiza que el check del menú refleje el tema realmente activo.
     """
-    ui.accion_claro.triggered.connect(lambda: cambiar_tema(ui, "claro"))
-    ui.accion_oscuro.triggered.connect(lambda: cambiar_tema(ui, "oscuro"))
+    def intentar_cambiar_tema(nombre_tema):
+        # DEBUG
+        print(f"[config] intentar_cambiar_tema -> pedido: {nombre_tema}")
 
-    # Cargar estado inicial
+        # Obtener estado del reproductor si se pasó la lógica
+        estado = logica.reproductor.playbackState()
+        if logica and hasattr(logica, "reproductor"):
+            try:
+                estado = logica.reproductor.playbackState()
+            except Exception as e:
+                print(f"[config][warn] error al leer playbackState: {e}")
+                estado = QMediaPlayer.StoppedState
+
+        print(f"[config] Estado reproductor: {estado} (0 stopped, 1 paused, 2 playing)")
+
+        # Si no está detenido, bloquear y revertir checks visuales
+        if estado != QMediaPlayer.StoppedState:
+            QMessageBox.information(
+                None,
+                "Cambio de tema bloqueado",
+                "Solo puedes cambiar el tema cuando no se está reproduciendo ningún video."
+            )
+            # Revertir visualmente los checks al tema realmente guardado
+            tema_actual = tema_guardado()
+            print(f"[config] Revirtiendo check a tema guardado: {tema_actual}")
+            ui.accion_claro.setChecked(tema_actual == "claro")
+            ui.accion_oscuro.setChecked(tema_actual == "oscuro")
+            return
+
+        # Si llegamos aquí está en StoppedState -> aplicar el tema
+        cambiar_tema(ui, nombre_tema)
+        # garantizar que el check representa el nuevo tema
+        ui.accion_claro.setChecked(nombre_tema == "claro")
+        ui.accion_oscuro.setChecked(nombre_tema == "oscuro")
+
+    # Conectar las acciones al "intentar_cambiar_tema"
+    ui.accion_claro.triggered.connect(lambda: intentar_cambiar_tema("claro"))
+    ui.accion_oscuro.triggered.connect(lambda: intentar_cambiar_tema("oscuro"))
+
+    # Al iniciar, forzar que los checks reflejen el tema guardado
     tema = tema_guardado()
-    if tema == "claro":
-        ui.accion_claro.setChecked(True)
-        ui.accion_oscuro.setChecked(False)
-    else:
-        ui.accion_oscuro.setChecked(True)
-        ui.accion_claro.setChecked(False)
+    print(f"[config] Tema guardado al iniciar: {tema}")
+    ui.accion_claro.setChecked(tema == "claro")
+    ui.accion_oscuro.setChecked(tema == "oscuro")
+
 
 def cambiar_tema(ui, nombre_tema):
     """
     Cambia el tema en tiempo real, aplica el QSS y guarda la preferencia.
     """
+    print(f"[config] cambiar_tema -> {nombre_tema}")
     app = QApplication.instance()
     aplicar_tema(app, nombre_tema)
 
-    # Actualizar checks en el menú
-    if nombre_tema == "claro":
-        ui.accion_claro.setChecked(True)
-        ui.accion_oscuro.setChecked(False)
-    else:
-        ui.accion_oscuro.setChecked(True)
-        ui.accion_claro.setChecked(False)
+    # Actualizar checks por seguridad (aunque conectar_cambio_tema ya lo hace)
+    ui.accion_claro.setChecked(nombre_tema == "claro")
+    ui.accion_oscuro.setChecked(nombre_tema == "oscuro")
+
 
 
 def aplicar_iconos(ui, tema):

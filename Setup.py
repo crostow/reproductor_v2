@@ -14,7 +14,8 @@ class Reproductor(QMainWindow):
         # Se crea la instancia de la lógica y se pasa la interfaz
         self.logica = modulo.Logica_reproductor(self.ui)
 
-        configuracion.conectar_cambio_tema(self.ui)
+        configuracion.conectar_cambio_tema(self.ui, self.logica)
+
         configuracion.conectar_cambio_iconos(self.ui)
 
 
