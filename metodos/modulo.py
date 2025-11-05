@@ -12,9 +12,9 @@ from metodos.configuracion import aplicar_tema
 
 class Logica_reproductor:
     def __init__(self, ui):
+
         # cargamos la interfaz en la variable self.ui
         self.ui = ui
-
 
         # designamos la lista para que acepte arrastar y pegar
         self.ui.wdg_lista.setAcceptDrops(True)
@@ -123,7 +123,6 @@ class Logica_reproductor:
         self.ui.btn_anterior.setEnabled(False)
 
     def play_pausa(self):
-
         tema = configuracion.iconos_guardados()
         prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
         print(prefijo)
@@ -201,7 +200,6 @@ class Logica_reproductor:
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
 
-
     def reproducir_item(self, item):
         # metodo que se encarga cuando da doble click en la lp haga elk cambio
         self.reproductor.stop()
@@ -211,9 +209,6 @@ class Logica_reproductor:
         if ruta:
             self.indice_actual = self.lista_reproduccion.index(ruta)
             self.reproducir_video()
-
-
-
 
     def abrir_archivo(self, archivo=None):
         archivos, _ = QFileDialog.getOpenFileNames(

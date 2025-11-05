@@ -24,7 +24,6 @@ class Interfaz_reproductor(object):
         self.layout_horizontal = QVBoxLayout(self.centralwidget)
 
 
-
 ######## menu  y barar inferior
         # creamos la barra de menu
         self.menu_bar = QMenuBar(MainWindow)

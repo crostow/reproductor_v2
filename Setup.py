@@ -1,8 +1,10 @@
 import sys
+
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow
 from Interfaz import Ui
 from metodos import modulo, configuracion
-
+from metodos.system_tray import Bandeja_de_sistema
 
 class Reproductor(QMainWindow):
     def __init__(self, parent=None):
@@ -18,9 +20,12 @@ class Reproductor(QMainWindow):
 
         configuracion.conectar_cambio_iconos(self.ui)
 
+        self.Bandeja = Bandeja_de_sistema(self, self.logica)
+
 
 if __name__=="__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("Interfaz/icon_barra.png"))
 
 
     repro = Reproductor()
