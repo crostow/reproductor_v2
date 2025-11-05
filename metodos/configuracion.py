@@ -85,7 +85,6 @@ def conectar_cambio_tema(ui, logica):
     ui.accion_claro.setChecked(tema == "claro")
     ui.accion_oscuro.setChecked(tema == "oscuro")
 
-
 def cambiar_tema(ui, nombre_tema):
     """
     Cambia el tema en tiempo real, aplica el QSS y guarda la preferencia.
@@ -96,8 +95,6 @@ def cambiar_tema(ui, nombre_tema):
     # Actualizar checks por seguridad (aunque conectar_cambio_tema ya lo hace)
     ui.accion_claro.setChecked(nombre_tema == "claro")
     ui.accion_oscuro.setChecked(nombre_tema == "oscuro")
-
-
 
 def aplicar_iconos(ui, tema):
     """
