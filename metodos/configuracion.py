@@ -6,21 +6,22 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 
 
 def aplicar_tema(app, nombre_tema):
-    print(nombre_tema)
+    # print(nombre_tema)
     """
     Aplica el QSS de un tema y guarda la elección en QSettings.
     """
-    print("entra a cambiar el tema")
+    # print("entra a cambiar el tema")
     # Construir ruta al QSS
     ruta_qss = os.path.join("Interfaz", "temas", nombre_tema, f"estilo_{nombre_tema}.qss")
-    print(ruta_qss)
+    # print(ruta_qss)
     # Aplicar QSS
     try:
         with open(ruta_qss, "r", encoding="utf-8") as f:
             app.setStyleSheet(f.read())
-            print(f"Tema '{nombre_tema}' aplicado correctamente")
+            # print(f"Tema '{nombre_tema}' aplicado correctamente")
     except FileNotFoundError:
-        print(f"No se encontró el archivo de estilo: {ruta_qss}")
+        pass
+        # print(f"No se encontró el archivo de estilo: {ruta_qss}")
 
     # Guardar elección en QSettings
     settings = QSettings("MiEmpresa", "MiReproductor")
@@ -30,7 +31,7 @@ def tema_guardado():
     """
     Devuelve el tema guardado en QSettings, por defecto 'oscuro'.
     """
-    print("si llama a este metodo")
+    # print("si llama a este metodo")
     settings = QSettings("MiEmpresa", "MiReproductor")
     return settings.value("tema", "oscuro")
 
@@ -42,7 +43,7 @@ def conectar_cambio_tema(ui, logica):
     """
     def intentar_cambiar_tema(nombre_tema):
         # DEBUG
-        print(f"[config] intentar_cambiar_tema -> pedido: {nombre_tema}")
+        # print(f"[config] intentar_cambiar_tema -> pedido: {nombre_tema}")
 
         # Obtener estado del reproductor si se pasó la lógica
         estado = logica.reproductor.playbackState()
@@ -50,26 +51,15 @@ def conectar_cambio_tema(ui, logica):
             try:
                 estado = logica.reproductor.playbackState()
             except Exception as e:
-                print(f"[config][warn] error al leer playbackState: {e}")
+                # print(f"[config][warn] error al leer playbackState: {e}")
                 estado = QMediaPlayer.StoppedState
 
-        print(f"[config] Estado reproductor: {estado} (0 stopped, 1 paused, 2 playing)")
+        # print(f"[config] Estado reproductor: {estado} (0 stopped, 1 paused, 2 playing)")
 
-        # Si no está detenido, bloquear y revertir checks visuales
-        if estado != QMediaPlayer.StoppedState:
-            QMessageBox.information(
-                None,
-                "Cambio de tema bloqueado",
-                "Solo puedes cambiar el tema cuando no se está reproduciendo ningún video."
-            )
-            # Revertir visualmente los checks al tema realmente guardado
-            tema_actual = tema_guardado()
-            print(f"[config] Revirtiendo check a tema guardado: {tema_actual}")
-            ui.accion_claro.setChecked(tema_actual == "claro")
-            ui.accion_oscuro.setChecked(tema_actual == "oscuro")
-            return
+        # Ya no bloqueamos el cambio de tema si se está reproduciendo
+        # if estado != QMediaPlayer.StoppedState: ...
 
-        # Si llegamos aquí está en StoppedState -> aplicar el tema
+        # Aplicar el tema directamente
         cambiar_tema(ui, nombre_tema)
         # garantizar que el check representa el nuevo tema
         ui.accion_claro.setChecked(nombre_tema == "claro")
@@ -81,7 +71,7 @@ def conectar_cambio_tema(ui, logica):
 
     # Al iniciar, forzar que los checks reflejen el tema guardado
     tema = tema_guardado()
-    print(f"[config] Tema guardado al iniciar: {tema}")
+    # print(f"[config] Tema guardado al iniciar: {tema}")
     ui.accion_claro.setChecked(tema == "claro")
     ui.accion_oscuro.setChecked(tema == "oscuro")
 
@@ -95,6 +85,19 @@ def cambiar_tema(ui, nombre_tema):
     # Actualizar checks por seguridad (aunque conectar_cambio_tema ya lo hace)
     ui.accion_claro.setChecked(nombre_tema == "claro")
     ui.accion_oscuro.setChecked(nombre_tema == "oscuro")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def aplicar_iconos(ui, tema):
     """

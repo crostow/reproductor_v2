@@ -3,55 +3,79 @@ from PySide6.QtCore import QObject, Signal, QSettings, QSize, Qt
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QApplication
 
+
 class ThemeManager(QObject):
-    theme_changed = Signal(str)
+    # Emitimos señales separadas o una general cuando algo cambia
+    estilo_cambiado = Signal(str)
+    iconos_cambiados = Signal(str)
 
     def __init__(self, ui, parent=None):
         super().__init__(parent)
         self.ui = ui
         self.settings = QSettings("MiEmpresa", "MiReproductor")
-        self._current_theme = "oscuro"  # Default
+
+        # Variables de estado separadas
+        self._estilo_actual = "oscuro"
+        self._iconos_actuales = "oscuro"
 
     def load_user_preference(self):
-        """Loads the saved theme from settings and applies it."""
-        theme = self.settings.value("tema", "oscuro")
-        self.apply_theme(theme)
+        """Carga las preferencias guardadas independientemente."""
+        # Cargamos estilo
+        estilo = self.settings.value("tema_estilo", "oscuro")
+        self.aplicar_estilo(estilo)
 
-    def apply_theme(self, theme_name):
-        """Applies the QSS and updates icons for the given theme."""
-        self._current_theme = theme_name
-        
-        # 1. Apply QSS
-        self._load_qss(theme_name)
-        
-        # 2. Update Icons
-        self._update_icons(theme_name)
-        
-        # 3. Save preference
-        self.settings.setValue("tema", theme_name)
-        
-        # 4. Emit signal
-        self.theme_changed.emit(theme_name)
+        # Cargamos iconos
+        iconos = self.settings.value("tema_iconos", "oscuro")
+        self.aplicar_iconos(iconos)
 
-    def get_current_theme(self):
-        return self._current_theme
+    def aplicar_estilo(self, nombre_estilo):
+        """Solo cambia el QSS (Colores)."""
+        if self._estilo_actual == nombre_estilo and self.ui.centralwidget.styleSheet() != "":
+            # Pequeña optimización: si ya es el estilo actual, no recargamos a menos que sea el inicio
+            pass
+
+        self._estilo_actual = nombre_estilo
+        self._load_qss(nombre_estilo)
+
+        self.settings.setValue("tema_estilo", nombre_estilo)
+        self.estilo_cambiado.emit(nombre_estilo)
+
+    def aplicar_iconos(self, nombre_set_iconos):
+        """Solo cambia las imágenes de los iconos."""
+        self._iconos_actuales = nombre_set_iconos
+
+        self._update_icons_static()
+
+        self.settings.setValue("tema_iconos", nombre_set_iconos)
+        # Emitimos señal para que modulo.py actualice los dinámicos (Play/Volumen)
+        self.iconos_cambiados.emit(nombre_set_iconos)
+
+    def get_icon_path(self, icon_name):
+        """Devuelve la ruta basada en el SET DE ICONOS seleccionado (no el estilo)."""
+        return f":/{self._iconos_actuales}/{icon_name}"
+
+    def get_current_style(self):
+        return self._estilo_actual
+
+    def get_current_icons(self):
+        return self._iconos_actuales
 
     def _load_qss(self, theme_name):
         app = QApplication.instance()
-        ruta_qss = os.path.join("Interfaz", "temas", theme_name, f"estilo_{theme_name}.qss")
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ruta_qss = os.path.join(base_dir, "Interfaz", "temas", theme_name, f"estilo_{theme_name}.qss")
+
         try:
             with open(ruta_qss, "r", encoding="utf-8") as f:
                 app.setStyleSheet(f.read())
         except FileNotFoundError:
             print(f"Warning: QSS file not found: {ruta_qss}")
 
-    def _update_icons(self, theme_name):
-        """Updates all UI icons based on the theme."""
-        prefijo = f":/{theme_name}/"
+    def _update_icons_static(self):
+        """Actualiza los botones estáticos con el set de iconos actual."""
+        prefijo = f":/{self._iconos_actuales}/"
 
-        # Main buttons
         botones = {
-            self.ui.btn_play: "boton-de-play.png", # Note: Logic might need to handle play/pause state
             self.ui.btn_stop: "boton-detener.png",
             self.ui.btn_anterior: "atras.png",
             self.ui.btn_siguiente: "siguiente.png",
@@ -59,27 +83,5 @@ class ThemeManager(QObject):
         }
 
         for btn, archivo in botones.items():
-            # Special handling for play button if it's currently showing pause?
-            # For now, we reset to play, but the logic might overwrite this.
-            # Ideally, we should check the player state, but ThemeManager shouldn't know about player state directly?
-            # Or we just update the base icons and let the logic handle the state.
-            # Let's just update the base icon for now.
-            if btn == self.ui.btn_play:
-                 # We'll leave play button handling to the logic or handle it smarter later.
-                 # For now, let's just update it to the default 'play' icon of the new theme
-                 # UNLESS we can check the icon name.
-                 pass
-            else:
-                btn.setIcon(QIcon(prefijo + archivo))
-                btn.setIconSize(QSize(90, 90))
-
-        # Volume Icon (default to medium/low or keep current?)
-        # For simplicity, we'll default to volume_1, but logic should update it on volume change.
-        ruta_vol = prefijo + "volumen_1.png"
-        pix = QPixmap(ruta_vol)
-        scaled_pix = pix.scaled(90, 90, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.ui.lbl_volumen.setPixmap(scaled_pix)
-
-    def get_icon_path(self, icon_name):
-        """Helper to get full resource path for current theme."""
-        return f":/{self._current_theme}/{icon_name}"
+            btn.setIcon(QIcon(prefijo + archivo))
+            btn.setIconSize(QSize(90, 90))  # Mantenemos el tamaño fijo que definimos antes

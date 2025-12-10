@@ -6,15 +6,22 @@ import cv2
 # import configuracion
 from PySide6.QtWidgets import QListWidgetItem, QFileDialog, QMessageBox
 
-from metodos import configuracion
-from metodos.configuracion import aplicar_tema
+# from metodos import configuracion
+# from metodos.configuracion import aplicar_tema
 
 
 class Logica_reproductor:
-    def __init__(self, ui):
+    def __init__(self, ui, theme_manager):
 
         # cargamos la interfaz en la variable self.ui
         self.ui = ui
+        self.theme_manager = theme_manager
+
+        # --- CAMBIO AQUÍ ---
+        # Antes escuchabas 'theme_changed', ahora escuchamos 'iconos_cambiados'
+        # porque si cambia solo el color de fondo, no necesitamos recargar el icono de play.
+        self.theme_manager.iconos_cambiados.connect(self.actualizar_iconos_estado)
+
 
         # designamos la lista para que acepte arrastar y pegar
         self.ui.wdg_lista.setAcceptDrops(True)
@@ -98,7 +105,8 @@ class Logica_reproductor:
             self.indice_actual += 1
             self.reproducir_video()
         else:
-            print("Fin de la lista de reproducción")
+            pass
+            # print("Fin de la lista de reproducción")
 
     def anterior_video(self):
         #Reproduce el video anterior si existe
@@ -106,7 +114,8 @@ class Logica_reproductor:
             self.indice_actual -= 1
             self.reproducir_video()
         else:
-            print("Inicio de la lista de reproducción")
+            pass
+            # print("Inicio de la lista de reproducción")
 
     def actualizar_botones(self):
         # actualiza los botones cuando detecta cambios posicion en la lista de reproduccion
@@ -123,17 +132,17 @@ class Logica_reproductor:
         self.ui.btn_anterior.setEnabled(False)
 
     def play_pausa(self):
-        tema = configuracion.iconos_guardados()
-        prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
-        print(prefijo)
+        # tema = configuracion.iconos_guardados()
+        # prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
+        # print(prefijo)
         # funcion para el cambio de estado del boton pausa
         estado_repro = self.reproductor.playbackState()
-        print(estado_repro)
+        # print(estado_repro)
         if estado_repro == QMediaPlayer.PlayingState:
-            self.ui.btn_play.setIcon(QIcon(prefijo +"boton-de-play.png"))
+            self.ui.btn_play.setIcon(QIcon(self.theme_manager.get_icon_path("boton-de-play.png")))
             self.reproductor.pause()
         elif estado_repro == QMediaPlayer.PausedState:
-            self.ui.btn_play.setIcon(QIcon(prefijo + "pausa.png"))
+            self.ui.btn_play.setIcon(QIcon(self.theme_manager.get_icon_path("pausa.png")))
             # self.ui.btn_play.setIcon(QIcon(":/pause.png"))
             self.reproductor.play()
 
@@ -163,15 +172,15 @@ class Logica_reproductor:
         self.animacion.start()
 
     def mod_volumen(self, valor):
-        tema = configuracion.iconos_guardados()
-        prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
-        print(prefijo)
+        # tema = configuracion.iconos_guardados()
+        # prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
+        # print(prefijo)
 
         # cabio de valor de audio dependiendo el valor del slider
         self.salida_audio.setVolume(valor/100)
         if valor <= 100 and valor >= 80:
-            print("alto")
-            pix = QPixmap(prefijo + "volumen_2.png")
+            # print("alto")
+            pix = QPixmap(self.theme_manager.get_icon_path("volumen_2.png"))
             max_icon = 90
             scaled_pix = pix.scaled(
                 max_icon, max_icon,
@@ -180,8 +189,8 @@ class Logica_reproductor:
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
         elif valor <= 80 and valor >0:
-            print("medio")
-            pix = QPixmap(prefijo + "volumen_1.png")
+            # print("medio")
+            pix = QPixmap(self.theme_manager.get_icon_path("volumen_1.png"))
             max_icon = 90
             scaled_pix = pix.scaled(
                 max_icon, max_icon,
@@ -190,8 +199,8 @@ class Logica_reproductor:
             )
             self.ui.lbl_volumen.setPixmap(scaled_pix)
         elif valor == 0:
-            print("bajo")
-            pix = QPixmap(prefijo + "silencio.png")
+            # print("bajo")
+            pix = QPixmap(self.theme_manager.get_icon_path("silencio.png"))
             max_icon = 90
             scaled_pix = pix.scaled(
                 max_icon, max_icon,
@@ -236,7 +245,7 @@ class Logica_reproductor:
         imagen = QImage(frame_rgb.data, ancho, alto, bytes, QImage.Format_RGB888)
 
         pixmap = QPixmap.fromImage(imagen).scaled(100, 60)
-        print("entra a la miniaturaA")
+        # print("entra a la miniaturaA")
         return QIcon(pixmap)
 
     def agregar_archivos(self, archivos):
@@ -279,11 +288,11 @@ class Logica_reproductor:
             self.ui.wdg_lista.setCurrentRow(self.indice_actual)
 
     def activar_btns(self):
-        tema = configuracion.iconos_guardados()
-        prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
-        print(prefijo)
+        # tema = configuracion.iconos_guardados()
+        # prefijo = f":/{tema}/"  # Ej: ":/claro/" o ":/oscuro/"
+        # print(prefijo)
         self.ui.btn_play.setEnabled(True)
-        self.ui.btn_play.setIcon(QIcon(prefijo +"pausa.png"))
+        self.ui.btn_play.setIcon(QIcon(self.theme_manager.get_icon_path("pausa.png")))
         self.ui.btn_anterior.setEnabled(True)
         self.ui.btn_stop.setEnabled(True)
         self.ui.btn_siguiente.setEnabled(True)
@@ -339,3 +348,26 @@ class Logica_reproductor:
 
         # slider de reproduccion lo definimos en 0
         self.ui.sld_avance.setRange(0, 0)
+
+    def actualizar_iconos_estado(self, nuevo_set_iconos):
+        """
+        Este método se llama automáticamente cuando cambias el set de iconos.
+        Se asegura de que el botón de Play/Pause y el volumen tengan el icono correcto
+        según si el video está pausado o reproduciéndose.
+        """
+
+        # 1. Actualizar botón Play/Pausa según estado actual
+        if self.reproductor.playbackState() == QMediaPlayer.PlayingState:
+            # Si está sonando, queremos ver el icono de PAUSA del nuevo tema
+            ruta = self.theme_manager.get_icon_path("pausa.png")
+        else:
+            # Si está quieto, queremos ver el icono de PLAY del nuevo tema
+            ruta = self.theme_manager.get_icon_path("boton-de-play.png")
+
+        self.ui.btn_play.setIcon(QIcon(ruta))
+
+        # 2. Actualizar icono de volumen
+        # Simplemente llamamos a tu función existente mod_volumen con el valor actual
+        # para que ella sola recalcule cuál icono (alto, bajo, mute) poner con el nuevo tema.
+        valor_actual = self.ui.vol_bar.value()
+        self.mod_volumen(valor_actual)

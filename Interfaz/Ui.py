@@ -14,7 +14,7 @@ class Interfaz_reproductor(object):
         MainWindow.setObjectName("MainWindow")
 
         # se le da un tamaño(ancho - alto )
-        MainWindow.resize(800, 300)
+        MainWindow.resize(800, 600)
 
         # widget central
         self.centralwidget = QWidget(MainWindow)
@@ -104,6 +104,7 @@ class Interfaz_reproductor(object):
         # creamos el widget de video
         # self.wdg_video = QVideoWidget()
         self.wdg_video = VideoWidgetPersonalizado()
+        self.wdg_video.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # self.wdg_video.setMainWindow(MainWindow)
         self.audio_output = QAudioOutput()
 

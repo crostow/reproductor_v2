@@ -1,3 +1,5 @@
+/* ================= TEMA CLARO ================= */
+
 /* Fondo general */
 QMainWindow, QWidget#centralwidget, QWidget {
     background-color: #F0F0F0;
@@ -9,7 +11,6 @@ QMenuBar {
     background-color: #E0E0E0;
     color: #2E2E2E;
 }
-
 QMenuBar::item:selected {
     background-color: #D0D0D0;
 }
@@ -19,7 +20,6 @@ QMenu {
     background-color: #E0E0E0;
     color: #2E2E2E;
 }
-
 QMenu::item:selected {
     background-color: #C0C0C0;
 }
@@ -27,17 +27,22 @@ QMenu::item:selected {
 /* Botones principales */
 QPushButton {
     background-color: #FFFFFF;
+    /* Borde de 1px visible */
     border: 1px solid #B0B0B0;
     border-radius: 8px;
-    padding: 5px;
+    /* CORRECCIÓN: Padding reducido para que quepa el icono de 90px */
+    padding: 2px;
 }
-
 QPushButton:hover {
     background-color: #E5E5E5;
 }
-
 QPushButton:pressed {
     background-color: #CCCCCC;
+}
+QPushButton:disabled {
+    background-color: #F0F0F0;
+    border: 1px solid #D0D0D0;
+    color: #A0A0A0;
 }
 
 /* Labels */
@@ -52,7 +57,6 @@ QSlider::groove:horizontal {
     background: #D0D0D0;
     border-radius: 4px;
 }
-
 QSlider::handle:horizontal {
     background: #FFFFFF;
     border: 1px solid #A0A0A0;
@@ -66,12 +70,12 @@ QListWidget {
     background-color: #FFFFFF;
     border: 1px solid #B0B0B0;
     color: #2E2E2E;
-    width: 300px;  /* Ancho fijo */
+    /* CORRECCIÓN: Dimensiones fijas obligatorias */
     min-width: 300px;
     max-width: 300px;
 }
 
-/* Video widget (opcional) */
+/* Video widget */
 QVideoWidget {
     background-color: #000000;
 }
